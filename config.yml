@@ -1,0 +1,37 @@
+default:
+  batchmode: false
+  cachedb: "sqlite"
+  cacheformat: "qs"
+  codechecks: true
+  delaystart: 0
+  googleuser: ""
+  inputpaths: null
+  messagingNumCharsModule: 21
+  mpbsuitabilityindex: "R" ## one of "G", "S", "L", "R"
+  paths:
+    cachedir: "cache"
+    scratchdir: "/tmp/scratch/MPB"
+  plot: true
+  reproduciblealgorithm: 2
+  run: 1
+  slackchannel: ""
+  usememoise: false
+  useprerun: true
+  userequire: true
+
+production:
+  batchmode: true
+  codechecks: false
+  delaystart: !expr sample(5L:15L, 1) # 5-15 minute delay to stagger starts
+  plot: false
+
+alex:
+  inherits: production
+  cachedb: !expr if (grepl("spades", Sys.info()[["nodename"]])) "sqlite" else "postgresql"
+  cacheformat: "qs"
+  googleuser: "achubaty@for-cast.ca"
+  codechecks: true ## TODO: set false after all fixed
+  paths:
+    scratchdir: !expr if (grepl("forcast(01|02)", Sys.info()[["nodename"]])) "/mnt/scratch/MPB" else "/tmp/scratch/MPB"
+  slackchannel: "@alex.chubaty"
+  useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE

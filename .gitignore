@@ -37,3 +37,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# simulation files + directories
+cache/
+inputs/
+outputs/
+packages/
