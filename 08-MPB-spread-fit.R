@@ -57,13 +57,6 @@ objectiveFunction <- function(params) {
   RenvironFile <- file.path(projDir, ".Renviron")
   if (file.exists(RenvironFile)) readRenviron(RenvironFile)
 
-  cacheDBconn <- DBI::dbConnect(drv = RPostgres::Postgres(),
-                                host = Sys.getenv("PGHOST"),
-                                port = Sys.getenv("PGPORT"),
-                                dbname = Sys.getenv("PGDATABASE"),
-                                user = Sys.getenv("PGUSER"),
-                                password = Sys.getenv("PGPASSWORD"))
-
   SpaDES.core::setPaths(
     cachePath = file.path(projDir, "cache"),
     inputPath = file.path(projDir, "inputs"),
