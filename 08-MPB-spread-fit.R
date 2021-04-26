@@ -31,7 +31,7 @@ paramsFit <- list(
 
 objects3 <- list(
   studyArea = simOutPreamble$studyArea,
-  studyAreaFit = simOutPreamble$studyAreaFit
+  studyAreaFit = simOutPreamble$studyAreaFit ## TODO: pass this explicitly as studyArea
 )
 
 modules3 <- list(
