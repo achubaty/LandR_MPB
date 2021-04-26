@@ -13,3 +13,6 @@
 [submodule "modules/mpbRedTopSpread"]
 	path = modules/mpbRedTopSpread
 	url = https://github.com/achubaty/mpbRedTopSpread
+[submodule "modules/MPB_SK_studyArea"]
+	path = modules/MPB_SK_studyArea
+	url = https://github.com/achubaty/MPB_SK_studyArea

@@ -27,7 +27,7 @@ opts <- options(
   "reproducible.cacheSaveFormat" = "rds", ## can be "qs" or "rds"
   "reproducible.conn" = cacheDBconn,
   "reproducible.destinationPath" = normPath(paths1$inputPath),
-  "reproducible.futurePlan" = FALSE
+  "reproducible.futurePlan" = FALSE,
   "reproducible.inputPaths" = NULL,
   "reproducible.nThreads" = 2,
   "reproducible.overwrite" = TRUE,
