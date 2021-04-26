@@ -6,6 +6,7 @@ default:
   delaystart: 0
   googleuser: ""
   inputpaths: null
+  lowmemory: false
   messagingNumCharsModule: 21
   mpbsuitabilityindex: "R" ## one of "G", "S", "L", "R"
   paths:

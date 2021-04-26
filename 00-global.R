@@ -31,3 +31,6 @@ if (delayStart > 0) {
 }
 
 source("06-studyArea.R")
+#source("07-dataPrep.R") ## skip for now
+source("08-MPB-spread-fit.R")
+source("09-main-sim.R")

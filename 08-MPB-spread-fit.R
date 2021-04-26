@@ -29,22 +29,22 @@ paramsFit <- list(
   )
 )
 
-objects3 <- list(studyArea = fsimOutPreamble$studyArea)
+objects3 <- list(studyArea = simOutPreamble$studyArea)
 
 modules3 <- list(
   "mpbClimateData", "mpbPine",
   "mpbMassAttacksData",
   "mpbRedTopGrowth",
-  "mpbRedTopSpread",
-  "mpbManagement"
+  "mpbRedTopSpread"#,
+  #"mpbManagement"
 )
 
 MPBfit <- Cache(simInit,
                 times = timesFit,
                 params = paramsFit,
-                modules = modules,
-                #objects = objects,
-                loadOrder = unlist(modules)#,
+                modules = modules3,
+                objects = objects3,
+                loadOrder = unlist(modules3)#,
                 #useCache = "overwrite"
 )
 
