@@ -46,7 +46,7 @@ opts <- options(
   "spades.useRequire" = FALSE # Don't use Require... meaning assume all pkgs installed
 )
 
-library(googledrive)
+Require("googledrive")
 
 httr::set_config(httr::config(http_version = 0))
 

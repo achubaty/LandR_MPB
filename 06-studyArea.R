@@ -8,16 +8,18 @@ objects1 <- list()
 
 parameters1 <- list()
 
-simOutPreamble <- Cache(simInitAndSpades,
-                        times = list(start = 0, end = 1),
-                        params = parameters1,
-                        modules = modules1,
-                        objects = objects1,
-                        paths = paths1,
-                        debug = 1,
-                        omitArgs = c("debug", "paths"),
-                        #useCache = "overwrite", ## TODO: remove this workaround
-                        useCloud = useCloudCache,
-                        cloudFolderID = cloudCacheFolderID)
+simOutPreamble <- Cache(
+  simInitAndSpades,
+  times = list(start = 0, end = 1),
+  params = parameters1,
+  modules = modules1,
+  objects = objects1,
+  paths = paths1,
+  debug = 1,
+  omitArgs = c("debug", "paths")#,
+  #useCache = "overwrite", ## TODO: remove this workaround
+  #useCloud = useCloudCache,
+  #cloudFolderID = cloudCacheFolderID
+)
 fsimOutPreamble <- file.path(Paths$outputPath, "ml_preamble.rds")
-saveSimList(simOutPreamble$ml, fsimOutPreamble, fileBackend = 2)
+saveSimList(simOutPreamble, fsimOutPreamble, fileBackend = 2)
