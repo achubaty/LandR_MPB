@@ -29,7 +29,10 @@ paramsFit <- list(
   )
 )
 
-objects3 <- list(studyArea = simOutPreamble$studyArea)
+objects3 <- list(
+  studyArea = simOutPreamble$studyArea,
+  studyAreaFit = simOutPreamble$studyAreaFit
+)
 
 modules3 <- list(
   "mpbClimateData", "mpbPine",
