@@ -36,3 +36,16 @@ alex:
     scratchdir: !expr if (grepl("forcast(01|02)", Sys.info()[["nodename"]])) "/mnt/scratch/MPB" else "/tmp/scratch/MPB"
   slackchannel: "@alex.chubaty"
   useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE
+
+eliot:
+  inherits: default
+  cachedb: "sqlite"
+  cacheformat: "qs"
+  googleuser: "eliotmcintire@gmail.com"
+  codechecks: true ## TODO: set false after all fixed
+  paths:
+    scratchdir: !expr if (grepl("forcast(01|02)", Sys.info()[["nodename"]])) "/mnt/scratch/MPB" else "/tmp/scratch/MPB"
+  slackchannel: "@eliotmcintire"
+  useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE
+  inputpaths: c:/Eliot/data
+  usememoise: true

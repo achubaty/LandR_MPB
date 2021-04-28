@@ -24,11 +24,11 @@ opts <- options(
   "rasterMaxMemory" = maxMemory,
   "rasterTmpDir" = scratchDir,
   "reproducible.cachePath" = file.path(scratchDir, "cache"),
-  "reproducible.cacheSaveFormat" = "rds", ## can be "qs" or "rds"
+  "reproducible.cacheSaveFormat" = cacheFormat, ## can be "qs" or "rds"
   "reproducible.conn" = cacheDBconn,
   "reproducible.destinationPath" = normPath(paths1$inputPath),
   "reproducible.futurePlan" = FALSE,
-  "reproducible.inputPaths" = NULL,
+  "reproducible.inputPaths" = userInputPaths,
   "reproducible.nThreads" = 2,
   "reproducible.overwrite" = TRUE,
   "reproducible.quick" = FALSE,
@@ -36,9 +36,9 @@ opts <- options(
   "reproducible.useCache" = TRUE,
   "reproducible.useCloud" = TRUE,
   "reproducible.useGDAL" = FALSE, ## NOTE: GDAL can be faster, but mixing GDAL with raster causes inconsistencies
-  "reproducible.useMemoise" = FALSE,
-  "reproducible.useNewDigestAlgorithm" = TRUE,
-  "reproducible.useRequire" = FALSE,
+  "reproducible.useMemoise" = useMemoise,
+  "reproducible.useNewDigestAlgorithm" = 2,
+  "reproducible.useRequire" = TRUE,
   "spades.moduleCodeChecks" = FALSE,
   "spades.nThreads" = 4,
   "spades.recoveryMode" = FALSE,

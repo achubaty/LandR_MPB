@@ -1,5 +1,5 @@
 Require(c("data.table", "plyr", "pryr", "raster")) ## ensure plyr loaded before dplyr or there will be problems
-Require("PredictiveEcology/SpaDES.install (>= 0.0.4)")
+Require("PredictiveEcology/SpaDES.install (>= 0.0.4.9000)")
 Require("PredictiveEcology/SpaDES.core@rasterToMemoryUpdates (>= 1.0.6.9023)",
         which = c("Suggests", "Imports", "Depends"), upgrade = FALSE) # need Suggests in SpaDES.core
 
