@@ -50,139 +50,143 @@ modules3 <- list(
   #"mpbManagement"
 )
 
-MPBfit <- Cache(simInit,
-                times = timesFit,
-                params = paramsFit,
-                modules = modules3,
-                objects = objects3,
-                loadOrder = unlist(modules3)#,
-                #useCache = "overwrite"
-)
-
-objectiveFunction <- function(params) {
-  data.table::setDTthreads(1L)
-
-  RenvironFile <- file.path(projDir, ".Renviron")
-  if (file.exists(RenvironFile)) readRenviron(RenvironFile)
-
-  SpaDES.core::setPaths(
-    cachePath = file.path(projDir, "cache"),
-    inputPath = file.path(projDir, "inputs"),
-    modulePath = file.path(projDir, "modules"),
-    outputPath = file.path(projDir, "outputs"),
-    rasterPath = file.path(scratchDir, "rasters")
-  )
-  lowMemory <- TRUE
-  maxMemory <- 5e+9
-
-  raster::rasterOptions(default = TRUE)
-  options(
-    "rasterMaxMemory" = maxMemory,
-    "rasterTmpDir" = Paths$rasterPath,
-    "reproducible.cacheSaveFormat" = "rds", ## can be "qs" or "rds"
-    "reproducible.conn" = cacheDBconn
+MPBfit <- #Cache(
+  simInitAndSpades(
+    times = timesFit,
+    params = paramsFit,
+    modules = modules3,
+    objects = objects3,
+    loadOrder = unlist(modules3)#,
+    # events = "init"
+    # useCache = "overwrite"
   )
 
-  Sys.sleep(runif(1, 1, 100)) ## random delay to mitigate database locked errors
+if (FALSE) {
+  projDir <- getwd()
+  objectiveFunction <- function(params) {
+    data.table::setDTthreads(1L)
 
-  sim <- reproducible::retry(quote({
-    simInit(times = timesFit, params = paramsFit, modules = modules,
-            #objects = objects,
-            #useCache = "overwrite",
-            loadOrder = unlist(modules)
+    RenvironFile <- file.path(projDir, ".Renviron")
+    if (file.exists(RenvironFile)) readRenviron(RenvironFile)
+
+    SpaDES.core::setPaths(
+      cachePath = file.path(projDir, "cache"),
+      inputPath = file.path(projDir, "inputs"),
+      modulePath = file.path(projDir, "modules"),
+      outputPath = file.path(projDir, "outputs"),
+      rasterPath = file.path(scratchDir, "rasters")
     )
-  }))
+    lowMemory <- TRUE
+    maxMemory <- 5e+9
 
-  params(sim)[["mpbRedTopSpread"]][["advectionDir"]] <- params[1]
-  params(sim)[["mpbRedTopSpread"]][["advectionMag"]] <- params[2]
-  params(sim)[["mpbRedTopSpread"]][["bgSettlingProp"]] <- params[3]
-  params(sim)[["mpbRedTopSpread"]][["meanDist"]] <- params[4]
+    raster::rasterOptions(default = TRUE)
+    options(
+      "rasterMaxMemory" = maxMemory,
+      "rasterTmpDir" = Paths$rasterPath,
+      "reproducible.cacheSaveFormat" = "rds", ## can be "qs" or "rds"
+      "reproducible.conn" = cacheDBconn
+    )
 
-  simOut <- spades(sim, .plotInitialTime = NA, debug = FALSE)
+    # Sys.sleep(runif(1, 1, 100)) ## random delay to mitigate database locked errors
 
-  ## TODO: below currently does total attack area. more refined criteria needed
-  ## e.g., area and shape metrics from `landscapemetrics` package?
+    sim <- reproducible::retry(quote({
+      simInit(times = timesFit, params = paramsFit, modules = modules,
+              #objects = objects,
+              #useCache = "overwrite",
+              loadOrder = unlist(modules)
+      )
+    }))
 
-  ## simulated attack area
-  atks <- simOut$massAttacksDT
-  nPix <- atks[ATKTREES > 0, .N]
-  atkAreaSim <- nPix * prod(res(simOut$rasterToMatch)) / (100^2) ## area in ha
+    params(sim)[["mpbRedTopSpread"]][["advectionDir"]] <- params[1]
+    params(sim)[["mpbRedTopSpread"]][["advectionMag"]] <- params[2]
+    params(sim)[["mpbRedTopSpread"]][["bgSettlingProp"]] <- params[3]
+    params(sim)[["mpbRedTopSpread"]][["meanDist"]] <- params[4]
 
-  ## attacked area from data
-  atksRas <- simOut$massAttacksMap[[paste0("X", timesFit$end)]]
-  atks <- data.table(ID = 1L:ncell(atksRas), ATKTREES = atksRas[])
-  nPix <- atks[ATKTREES > 0, .N] ## total number of pixels
-  atkAreaData <- nPix * prod(res(simOut$rasterToMatch)) / (100^2) ## area in ha
+    simOut <- spades(sim, .plotInitialTime = NA, debug = FALSE)
 
-  ## sum negative log likelihood for attacked pixels
+    ## TODO: below currently does total attack area. more refined criteria needed
+    ## e.g., area and shape metrics from `landscapemetrics` package?
+
+    ## simulated attack area
+    atks <- simOut$massAttacksDT
+    nPix <- atks[ATKTREES > 0, .N]
+    atkAreaSim <- nPix * prod(res(simOut$rasterToMatch)) / (100^2) ## area in ha
+
+    ## attacked area from data
+    atksRas <- simOut$massAttacksMap[[paste0("X", timesFit$end)]]
+    atks <- data.table(ID = 1L:ncell(atksRas), ATKTREES = atksRas[])
+    nPix <- atks[ATKTREES > 0, .N] ## total number of pixels
+    atkAreaData <- nPix * prod(res(simOut$rasterToMatch)) / (100^2) ## area in ha
+
+    ## sum negative log likelihood for attacked pixels
 
 
-  ## TODO: something other than simple sum of squares?
-  metric <- (atkAreaData - atkAreaSim)^2 #+ (SNLL / 10^3)
-  return(metric)
-}
-
-params4POM <- data.frame(
-  name = c("advectionDir", "advectionMag", "bgSettlingProp", "meanDist"),
-  lower = c(  0.000,   10, 0.01,   100),
-  upper = c(359.999, 1000, 0.20, 10000), ## TODO: refine these upper and lower limits
-  stringsAsFactors = FALSE
-)
-
-packages4POM <- lapply(unlist(modules), function(m) reqdPkgs(MPBfit, m)) %>%
-  unlist() %>%
-  unique() %>%
-  grep("@", ., invert = TRUE, value = TRUE) %>%
-  c("amc", "LandR", "pemisc", "SpaDES.core")
-
-N <- 10 * nrow(params4POM) ## need 10 populations per parameter
-cl <- parallel::makeCluster(min(N, 20),     ## up to 20 GB each for 2010-2011, so max 24 threads
-                            type = "SOCK")  ## forking doesn't work with data.table
-
-parallel::clusterExport(cl, varlist = c("modules", "paramsFit", "packages4POM", "projDir", "scratchDir", "timesFit"))
-parallel::clusterEvalQ(
-  cl, {
-    for (i in packages4POM)
-      library(i, character.only = TRUE)
+    ## TODO: something other than simple sum of squares?
+    metric <- (atkAreaData - atkAreaSim)^2 #+ (SNLL / 10^3)
+    return(metric)
   }
-)
-outPOM <- DEoptim(fn = objectiveFunction,
-                  control = DEoptim::DEoptim.control(
-                    cluster = cl, ## see ArdiaD/DEoptim#3
-                    #foreachArgs = c(.packages = packages4POM), ## only when parallelType = 2
-                    initialpop = NULL,
-                    itermax = 50,
-                    #packages = as.list(packages4POM),
-                    parallelType = 1, ## 0 = single thread; 1 = parallel; 2 = foreach
-                    #parVar = list("modules", "paramsFit", "timesFit", "Paths"),
-                    VTR = 0
-                  ),
-                  lower = params4POM$lower,
-                  upper = params4POM$upper
-)
-parallel::stopCluster(cl)
 
-qs::qsave(outPOM, file.path(Paths$outputPath, "outPOM.qs"))
-#saveSimList(MPBfit, file.path(Paths$outputPath, "test.qs"))
-#MPBfit <- loadSimList(file.path(Paths$outputPath, "test.qs"))
+  params4POM <- data.frame(
+    name = c("advectionDir", "advectionMag", "bgSettlingProp", "meanDist"),
+    lower = c(  0.000,   10, 0.01,   100),
+    upper = c(359.999, 1000, 0.20, 10000), ## TODO: refine these upper and lower limits
+    stringsAsFactors = FALSE
+  )
 
-## MPB spread fit Summarios
-paramNames <- c("advectionDir", "advectionMag", "bgSettlingProp", "meanDist")
+  packages4POM <- lapply(unlist(modules3), function(m) reqdPkgs(MPBfit, m)) %>%
+    unlist() %>%
+    unique() %>%
+    grep("@", ., invert = TRUE, value = TRUE) %>%
+    c("amc", "LandR", "pemisc", "SpaDES.core")
 
-bestValues <- as.data.frame(outPOM[["member"]][["bestmemit"]])
-colnames(bestValues) <- paramNames
+  N <- 10 * nrow(params4POM) ## need 10 populations per parameter
+  cl <- parallel::makeCluster(min(N, 20))  ## forking doesn't work with data.table
 
-bestFitVals <- as.data.frame(t(outPOM[["optim"]][["bestmem"]]))
-colnames(bestFitVals) <- paramNames
+  parallel::clusterExport(cl, varlist = c("modules", "paramsFit", "packages4POM", "projDir", "scratchDir", "timesFit"))
+  parallel::clusterEvalQ(
+    cl, {
+      for (i in packages4POM)
+        library(i, character.only = TRUE)
+    }
+  )
+  outPOM <- DEoptim(fn = objectiveFunction,
+                    control = DEoptim::DEoptim.control(
+                      cluster = cl, ## see ArdiaD/DEoptim#3
+                      #foreachArgs = c(.packages = packages4POM), ## only when parallelType = 2
+                      initialpop = NULL,
+                      itermax = 50,
+                      #packages = as.list(packages4POM),
+                      parallelType = 1, ## 0 = single thread; 1 = parallel; 2 = foreach
+                      #parVar = list("modules", "paramsFit", "timesFit", "Paths"),
+                      VTR = 0
+                    ),
+                    lower = params4POM$lower,
+                    upper = params4POM$upper
+  )
+  parallel::stopCluster(cl)
 
-plot(bestValues$advectionDir)
-points(bestFitVals$advectionDir, col = "red", pch = 19)
+  qs::qsave(outPOM, file.path(Paths$outputPath, "outPOM.qs"))
+  #saveSimList(MPBfit, file.path(Paths$outputPath, "test.qs"))
+  #MPBfit <- loadSimList(file.path(Paths$outputPath, "test.qs"))
 
-plot(bestValues$advectionMag)
-points(bestFitVals$advectionMag, col = "red", pch = 19)
+  ## MPB spread fit Summarios
+  paramNames <- c("advectionDir", "advectionMag", "bgSettlingProp", "meanDist")
 
-plot(bestValues$bgSettlingProp)
-points(bestFitVals$bgSettlingProp, col = "red", pch = 19)
+  bestValues <- as.data.frame(outPOM[["member"]][["bestmemit"]])
+  colnames(bestValues) <- paramNames
 
-plot(bestValues$meanDist)
-points(bestFitVals$meanDist, col = "red", pch = 19)
+  bestFitVals <- as.data.frame(t(outPOM[["optim"]][["bestmem"]]))
+  colnames(bestFitVals) <- paramNames
+
+  plot(bestValues$advectionDir)
+  points(bestFitVals$advectionDir, col = "red", pch = 19)
+
+  plot(bestValues$advectionMag)
+  points(bestFitVals$advectionMag, col = "red", pch = 19)
+
+  plot(bestValues$bgSettlingProp)
+  points(bestFitVals$bgSettlingProp, col = "red", pch = 19)
+
+  plot(bestValues$meanDist)
+  points(bestFitVals$meanDist, col = "red", pch = 19)
+}
