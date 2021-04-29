@@ -1,5 +1,7 @@
 if (!exists("pkgDir")) {
-  pkgDir <- file.path("packages", version$platform, paste0(version$major, ".",
+  topLevelPkgDir <- "packages"
+  if (Sys.info()[["user"]] == "emcintir") topLevelPkgDir <- "../packages_MPB_SK"
+  pkgDir <- file.path(topLevelPkgDir, version$platform, paste0(version$major, ".",
                                                            strsplit(version$minor, "[.]")[[1]][1]))
 
   if (!dir.exists(pkgDir)) {
@@ -9,12 +11,18 @@ if (!exists("pkgDir")) {
 }
 
 if (!suppressWarnings(require("Require"))) {
+  if (!require("drat")) install.packages("drat")
+  drat::addRepo("PredictiveEcology")
   install.packages("Require")
   library(Require)
 }
+# devtools::load_all("~/GitHub/reproducible")
+# devtools::load_all("~/GitHub/SpaDES.tools")
+# devtools::load_all("~/GitHub/SpaDES.core")
 
 switch(Sys.info()[["user"]],
        "achubaty" = Sys.setenv(R_CONFIG_ACTIVE = "alex"),
+       "emcintir" = Sys.setenv(R_CONFIG_ACTIVE = "eliot"),
        Sys.setenv(R_CONFIG_ACTIVE = "default")
 )
 #Sys.getenv("R_CONFIG_ACTIVE") ## verify
@@ -33,4 +41,4 @@ if (delayStart > 0) {
 source("06-studyArea.R")
 #source("07-dataPrep.R") ## skip for now
 source("08-MPB-spread-fit.R")
-source("09-main-sim.R")
+# source("09-main-sim.R")
