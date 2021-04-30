@@ -8,21 +8,21 @@ paramsFit <- list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
     .useCache = eventCaching,
-    .plotInitialTime = NA,
-    .tempdir = scratchDir
+    .plotInitialTime = NA#,
+    #.tempdir = scratchDir
   ),
   mpbMassAttacksData = list(
     .maxMemory = maxMemory,
     .useCache = eventCaching,
-    .plotInitialTime = NA,
-    .tempdir = scratchDir
+    .plotInitialTime = NA#,
+    #.tempdir = scratchDir
   ),
   mpbPine = list(
     lowMemory = lowMemory,
     .maxMemory = maxMemory,
     .useCache = eventCaching,
-    .plotInitialTime = NA,
-    .tempdir = scratchDir
+    .plotInitialTime = NA#,
+    #.tempdir = scratchDir
   ),
   mpbRedTopGrowth = list(
     .useCache = eventCaching,
