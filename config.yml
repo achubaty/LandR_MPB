@@ -47,5 +47,5 @@ eliot:
     scratchdir: !expr if (grepl("forcast(01|02)", Sys.info()[["nodename"]])) "/mnt/scratch/MPB" else "/tmp/scratch/MPB"
   slackchannel: "@eliotmcintire"
   useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE
-  inputpaths: c:/Eliot/data
+  inputpaths: ~/data
   usememoise: true
