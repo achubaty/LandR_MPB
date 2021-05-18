@@ -33,7 +33,8 @@ paramsFit <- list(
     advectionDir = 90,
     advectionMag = 1000,
     bgSettlingProp = 0.1,
-    meanDist = 1000
+    meanDist = 1000,
+    type = "notFit"
   )
 )
 
