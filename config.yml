@@ -13,6 +13,7 @@ default:
     cachedir: "cache"
     scratchdir: "/tmp/scratch/MPB"
   plot: true
+  recoverymode: false
   reproduciblealgorithm: 2
   run: 1
   slackchannel: ""
@@ -45,6 +46,7 @@ eliot:
   codechecks: true ## TODO: set false after all fixed
   paths:
     scratchdir: !expr if (grepl("forcast(01|02)", Sys.info()[["nodename"]])) "/mnt/scratch/MPB" else "/tmp/scratch/MPB"
+  recoverymode: true
   slackchannel: "@eliotmcintire"
   useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE
   inputpaths: ~/data

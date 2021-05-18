@@ -41,7 +41,7 @@ opts <- options(
   "reproducible.useRequire" = TRUE,
   "spades.moduleCodeChecks" = FALSE,
   "spades.nThreads" = 4,
-  "spades.recoveryMode" = FALSE,
+  "spades.recoveryMode" = recoveryMode,
   "spades.restartR.restartDir" = paths3$outputPath,
   "spades.useRequire" = FALSE # Don't use Require... meaning assume all pkgs installed
 )

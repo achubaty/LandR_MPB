@@ -21,6 +21,7 @@ usePlot <- config::get("plot")
 userInputPaths <- config::get("inputpaths")
 usePrerun <- config::get("useprerun")
 useRequire <- config::get("userequire")
+recoveryMode <- config::get("recoverymode")
 
 ## default paths
 inputDir <- "inputs"
