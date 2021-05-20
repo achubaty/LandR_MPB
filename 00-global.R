@@ -16,9 +16,9 @@ if (!suppressWarnings(require("Require"))) {
   install.packages("Require")
   library(Require)
 }
-# devtools::load_all("~/GitHub/reproducible")
+#devtools::load_all("~/GitHub/reproducible")
 # devtools::load_all("~/GitHub/SpaDES.tools")
-# devtools::load_all("~/GitHub/SpaDES.core")
+#devtools::load_all("~/GitHub/SpaDES.core")
 
 switch(Sys.info()[["user"]],
        "achubaty" = Sys.setenv(R_CONFIG_ACTIVE = "alex"),
