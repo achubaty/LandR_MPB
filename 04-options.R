@@ -1,8 +1,9 @@
 ## cache database connection (requires reproducbile >= 1.0.0)
 cacheDBconn <- if (config::get("cachedb") == "sqlite") {
-  #DBI::dbConnect(drv = RSQLite::SQLite())
-  NULL ## should default to sqlite
+  Require("RSQLite")
+  NULL
 } else if (config::get("cachedb") == "postgresql") {
+  Require("RPostgres")
   DBI::dbConnect(drv = RPostgres::Postgres(),
                  host = Sys.getenv("PGHOST"),
                  port = Sys.getenv("PGPORT"),
