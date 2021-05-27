@@ -1,8 +1,11 @@
 if (!exists("pkgDir")) {
-  topLevelPkgDir <- "packages"
-  if (Sys.info()[["user"]] == "emcintir") topLevelPkgDir <- "../packages_MPB_SK"
-  pkgDir <- file.path(topLevelPkgDir, version$platform, paste0(version$major, ".",
-                                                           strsplit(version$minor, "[.]")[[1]][1]))
+  topLevelPkgDir <- if (Sys.info()[["user"]] == "emcintir") {
+    "../packages_MPB_SK"
+  } else {
+    "packages"
+  }
+  pkgDir <- file.path(topLevelPkgDir, version$platform,
+                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 
   if (!dir.exists(pkgDir)) {
     dir.create(pkgDir, recursive = TRUE)
@@ -17,7 +20,7 @@ if (!suppressWarnings(require("Require"))) {
   library(Require)
 }
 #devtools::load_all("~/GitHub/reproducible")
-# devtools::load_all("~/GitHub/SpaDES.tools")
+#devtools::load_all("~/GitHub/SpaDES.tools")
 #devtools::load_all("~/GitHub/SpaDES.core")
 
 switch(Sys.info()[["user"]],
