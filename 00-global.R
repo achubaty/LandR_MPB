@@ -19,7 +19,16 @@ if (!suppressWarnings(require("Require"))) {
   install.packages("Require")
   library(Require)
 }
-#devtools::load_all("~/GitHub/reproducible")
+
+library(raster)
+if (!require("BioSIM")) {
+  # https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
+  install.packages("https://sourceforge.net/projects/repiceasource/files/latest", repos = NULL,  type="source")
+  install.packages("https://sourceforge.net/projects/biosimclient.mrnfforesttools.p/files/latest", repos = NULL,  type="source")
+}
+library(BioSIM)
+getModelList() # need to do this before 
+#devtools::install("../reproducible")
 #devtools::load_all("~/GitHub/SpaDES.tools")
 #devtools::load_all("~/GitHub/SpaDES.core")
 
