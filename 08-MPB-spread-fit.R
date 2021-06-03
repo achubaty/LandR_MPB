@@ -4,7 +4,17 @@ do.call(SpaDES.core::setPaths, paths3)
 
 timesFit <- list(start = 2010, end = 2011) ## 2010-2016
 paramsFit <- list(
+  canWind = list(
+    climateModel = "GCM4", ## TODO: parametrize using config
+    climateScenario = "4.5", ## TODO: parametrize using config
+    .plotInitialTime = timesFit$start,
+    .plotInterval = NA,
+    #.tempdir = scratchDir,
+    years = seq(timesFit$start, timesFit$end, 1)
+  ),
   mpbClimateData = list(
+    climateModel = "GCM4", ## TODO: parametrize using config
+    climateScenario = "4.5", ## TODO: parametrize using config
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
     .useCache = eventCaching,

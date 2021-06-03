@@ -16,3 +16,6 @@
 [submodule "modules/MPB_SK_studyArea"]
 	path = modules/MPB_SK_studyArea
 	url = https://github.com/achubaty/MPB_SK_studyArea
+[submodule "modules/canWind"]
+	path = modules/canWind
+	url = https://github.com/achubaty/canWind
