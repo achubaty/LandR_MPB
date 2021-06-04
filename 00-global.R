@@ -20,14 +20,18 @@ if (!suppressWarnings(require("Require"))) {
   library(Require)
 }
 
-library(raster)
+Require("raster")
 if (!require("BioSIM")) {
   # https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
-  install.packages("https://sourceforge.net/projects/repiceasource/files/latest", repos = NULL,  type="source")
-  install.packages("https://sourceforge.net/projects/biosimclient.mrnfforesttools.p/files/latest", repos = NULL,  type="source")
+  install.packages("https://sourceforge.net/projects/repiceasource/files/latest",
+                   repos = NULL, type = "source")
+  install.packages("https://sourceforge.net/projects/biosimclient.mrnfforesttools.p/files/latest",
+                   repos = NULL, type = "source")
+  library(BioSIM)
 }
-library(BioSIM)
-getModelList() # need to do this before 
+
+BioSIM::getModelList() # need to do this early, to ensure java client initialized
+
 #devtools::install("../reproducible")
 #devtools::load_all("~/GitHub/SpaDES.tools")
 #devtools::load_all("~/GitHub/SpaDES.core")
@@ -54,3 +58,6 @@ source("06-studyArea.R")
 #source("07-dataPrep.R") ## skip for now
 source("08-MPB-spread-fit.R")
 # source("09-main-sim.R")
+
+J4R::shutdownClient()
+
