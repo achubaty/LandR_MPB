@@ -8,7 +8,8 @@ paramsFit <- list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
     .useCache = eventCaching,
-    .plotInitialTime = NA#,
+    .plots = "screen"
+    # .plotInitialTime = NA#,
     #.tempdir = scratchDir
   ),
   mpbMassAttacksData = list(
