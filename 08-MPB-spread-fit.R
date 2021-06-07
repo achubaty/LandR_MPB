@@ -35,7 +35,7 @@ paramsFit <- list(
     advectionMag = 1000,
     bgSettlingProp = 0.1,
     meanDist = 1000,
-    type = if (Require:::isWindows() || amc::isRstudio()) "nofit" else "fit" # "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "fit" else "fit" # "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
