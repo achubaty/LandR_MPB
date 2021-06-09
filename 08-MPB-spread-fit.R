@@ -35,7 +35,7 @@ paramsFit <- list(
     advectionMag = 1000,
     bgSettlingProp = 0.1,
     meanDist = 1000,
-    type = if (Require:::isWindows() || amc::isRstudio()) "fit" else "fit" # "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "nofit" else "nofit" # "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
@@ -115,7 +115,7 @@ if (FALSE) {
     atkAreaSim <- nPix * prod(res(simOut$rasterToMatch)) / (100^2) ## area in ha
 
     ## attacked area from data
-    atksRas <- simOut$massAttacksMap[[paste0("X", timesFit$end)]]
+    atksRas <- simOut$massAttacksStack[[paste0("X", timesFit$end)]]
     atks <- data.table(ID = 1L:ncell(atksRas), ATKTREES = atksRas[])
     nPix <- atks[ATKTREES > 0, .N] ## total number of pixels
     atkAreaData <- nPix * prod(res(simOut$rasterToMatch)) / (100^2) ## area in ha
