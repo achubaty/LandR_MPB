@@ -13,7 +13,7 @@ if (!exists("pkgDir")) {
   .libPaths(pkgDir)
 }
 
-if (!suppressWarnings(require("Require"))) {
+if (!suppressWarnings(require("Require", quietly = TRUE))) {
   if (!require("drat")) install.packages("drat")
   drat::addRepo("PredictiveEcology")
   install.packages("Require")
