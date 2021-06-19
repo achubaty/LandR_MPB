@@ -8,7 +8,7 @@ paramsFit <- list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
     .useCache = eventCaching,
-    .plots = "screen"
+    .plots = ""
     # .plotInitialTime = NA#,
     #.tempdir = scratchDir
   ),
@@ -25,23 +25,25 @@ paramsFit <- list(
     .plotInitialTime = NA#,
     #.tempdir = scratchDir
   ),
-  mpbRedTopGrowth = list(
-    .useCache = eventCaching,
-    .plotInitialTime = NA,
-    dataset = "Boone2011"
-  ),
+  # mpbRedTopGrowth = list(
+  #   .useCache = eventCaching,
+  #   .plotInitialTime = NA,
+  #   dataset = "Boone2011"
+  # ),
   mpbRedTopSpread = list(
     advectionDir = 90,
     advectionMag = 1000,
     bgSettlingProp = 0.1,
     meanDist = 1000,
-    type = if (Require:::isWindows() || amc::isRstudio()) "runOnce" else "fit" # "runOnce"#  "optim" "nofit" "fit"
+    .plots = "screen",
+    type = if (Require:::isWindows() || amc::isRstudio()) "nofit" else "nofit" # "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
 objects3 <- list(
   studyArea = simOutPreamble$studyArea,
-  studyAreaFit = simOutPreamble$studyAreaFit ## TODO: pass this explicitly as studyArea
+  studyAreaFit = simOutPreamble$studyAreaFit, ## TODO: pass this explicitly as studyArea
+  absk = simOutPreamble$absk
 )
 
 modules3 <- list(
@@ -59,6 +61,7 @@ MPBfit <- #Cache(
     modules = modules3,
     objects = objects3,
     loadOrder = unlist(modules3)#,
+    # .cacheExtra = moduleCodeFiles(paths3, modules3)
     # events = "init"
     # useCache = "overwrite"
   )
