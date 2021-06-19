@@ -14,18 +14,18 @@ local({
                                     .os.version, "/latest")))
     options(HTTPUserAgent = .user.agent)
   }
-
-  topLevelPkgDir <- if (Sys.info()[["user"]] == "emcintir") {
-    "../packages_MPB_SK"
-  } else {
-    "packages"
-  }
-
-  pkgDir <- file.path(topLevelPkgDir, version$platform,
-                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
-
-  if (!dir.exists(pkgDir)) {
-      dir.create(pkgDir, recursive = TRUE)
-  }
-  .libPaths(pkgDir)
 })
+
+topLevelPkgDir <- if (Sys.info()[["user"]] == "emcintir") {
+  "../packages_MPB_SK"
+} else {
+  "packages"
+}
+
+pkgDir <- file.path(topLevelPkgDir, version$platform,
+                    paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+
+if (!dir.exists(pkgDir)) {
+  dir.create(pkgDir, recursive = TRUE)
+}
+.libPaths(pkgDir)

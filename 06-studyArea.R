@@ -6,7 +6,11 @@ modules1 <- list("MPB_SK_studyArea")
 
 objects1 <- list()
 
-parameters1 <- list()
+parameters1 <- list(
+  MPB_SK_studyArea = list(
+    .plotInitialTime = NA
+  )
+)
 
 
 # Digest the code files
