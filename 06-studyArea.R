@@ -8,6 +8,10 @@ objects1 <- list()
 
 parameters1 <- list()
 
+
+# Digest the code files
+# mcf <- CacheDigest(moduleCodeFiles, quick = FALSE)$outputHash
+
 simOutPreamble <- Cache(
   simInitAndSpades,
   times = list(start = 0, end = 1),
@@ -16,7 +20,8 @@ simOutPreamble <- Cache(
   objects = objects1,
   paths = paths1,
   debug = 1,
-  omitArgs = c("debug", "paths")#,
+  omitArgs = c("debug", "paths"),
+  .cacheExtra = moduleCodeFiles(paths1, modules1) # new fn in SpaDES.core (>= 1.0.8.9004)
   #useCache = "overwrite", ## TODO: remove this workaround
   #useCloud = useCloudCache,
   #cloudFolderID = cloudCacheFolderID
