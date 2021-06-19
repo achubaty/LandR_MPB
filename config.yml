@@ -17,6 +17,7 @@ default:
   reproduciblealgorithm: 2
   run: 1
   slackchannel: ""
+  showsimilardepth: 3
   usememoise: false
   useprerun: true
   userequire: true
@@ -47,6 +48,7 @@ eliot:
   paths:
     scratchdir: !expr if (grepl("forcast(01|02)", Sys.info()[["nodename"]])) "/mnt/scratch/MPB" else "/tmp/scratch/MPB"
   recoverymode: true
+  showsimilardepth: 6
   slackchannel: "@eliotmcintire"
   useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE
   inputpaths: ~/data

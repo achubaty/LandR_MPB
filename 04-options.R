@@ -34,6 +34,7 @@ opts <- options(
   "reproducible.overwrite" = TRUE,
   "reproducible.quick" = FALSE,
   "reproducible.showSimilar" = TRUE,
+  "reproducible.showSimilarDepth" = showSimilarDepth,
   "reproducible.useCache" = TRUE,
   "reproducible.useCloud" = TRUE,
   "reproducible.useGDAL" = FALSE, ## NOTE: GDAL can be faster, but mixing GDAL with raster causes inconsistencies

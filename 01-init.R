@@ -15,6 +15,7 @@ newGoogleIDs <- FALSE ## gets rechecked/updated for each script (06, 07x, 08x) b
 reproducibleAlgorithm <- config::get("reproduciblealgorithm")
 run <- config::get("run")
 scratchDir <- config::get("paths")[["scratchdir"]]
+showSimilarDepth <- config::get("showsimilardepth")
 suitabilityIndex <- config::get("mpbsuitabilityindex")
 useMemoise <- config::get("usememoise")
 usePlot <- config::get("plot")
