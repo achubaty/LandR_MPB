@@ -8,7 +8,7 @@ paramsFit <- list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
     .useCache = eventCaching,
-    .plots = ""
+    .plots = NULL
     # .plotInitialTime = NA#,
     #.tempdir = scratchDir
   ),
