@@ -2,7 +2,7 @@
 
 do.call(SpaDES.core::setPaths, paths3)
 
-timesFit <- list(start = 2010, end = 2011) ## 2010-2016
+timesFit <- list(start = 2010, end = 2020) ## 2010-2016
 paramsFit <- list(
   mpbClimateData = list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
@@ -36,7 +36,7 @@ paramsFit <- list(
     bgSettlingProp = 0.1,
     meanDist = 1000,
     .plots = "screen",
-    type = if (Require:::isWindows() || amc::isRstudio()) "nofit" else "nofit" # "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "predict" else "nofit" # "predict" "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
