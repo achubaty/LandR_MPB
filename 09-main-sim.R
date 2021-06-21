@@ -7,9 +7,9 @@ timesPredict <- list(start = 2016, end = 2016) ## 2017-2020
 
 paramsPredict <- paramsFit
 paramsPredict[["mpbRedTopSpread"]][["advectionDir"]] <- bestFitVals$advectionDir
-paramsPredict[["mpbRedTopSpread"]][["advectionMag"]] <- bestFitVals$advectionMag
+paramsPredict[["mpbRedTopSpread"]][["p_advectionMag"]] <- bestFitVals$p_advectionMag
 paramsPredict[["mpbRedTopSpread"]][["bgSettlingProp"]] <- bestFitVals$bgSettlingProp
-paramsPredict[["mpbRedTopSpread"]][["meanDist"]] <- bestFitVals$meanDist
+paramsPredict[["mpbRedTopSpread"]][["p_meanDist"]] <- bestFitVals$p_meanDist
 
 tryCatch({
   mySimOut <- Cache(simInitAndSpades, times = timesPredict, #cl = cl,
