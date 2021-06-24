@@ -3,6 +3,11 @@
 do.call(SpaDES.core::setPaths, paths3)
 
 timesFit <- list(start = 2010, end = 2020) ## 2010-2016
+times <- list(start = 2010, end = 2020) ## 2010-2016
+timesForecast <- list(start = 2020, end = 2022) ## 2010-2016
+
+times <- timesForecast
+
 paramsFit <- list(
   .globals = list(.plots = "png"),
   mpbClimateData = list(
@@ -33,7 +38,7 @@ paramsFit <- list(
     maxDistance = 1e5,
     dispersalKernel = "twodt",# "Generalized Gamma", # Weibull3
     # .plots = "screen",
-    type = if (Require:::isWindows() || amc::isRstudio()) "validate" else "optim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "predict" else "predict" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
@@ -53,7 +58,7 @@ modules3 <- list(
 
 
 
-if (!(Require:::isWindows() || amc::isRstudio()))
+if (!(Require:::isWindows() || amc::isRstudio()) && grepl("optim", tolower(paramsFit$mpbRedTopSpread$type )))
   MPBfit <- Cache(
     simInitAndSpades,
     times = timesFit,
@@ -72,7 +77,6 @@ DEoutFileList <- dir(dirname(paths3$outputPath), pattern = "DEout", full.names =
 fit_mpbSpreadOptimizer <- readRDS(DEoutFileList[[24]]) # 24 is currently best of my files (Eliot)
 objects3 <- append(objects3,
                    list(fit_mpbSpreadOptimizer = fit_mpbSpreadOptimizer))
-timesPredict <- list(start = 2010, end = 2020) ## 2010-2016
 paramsFit$mpbRedTopSpread$dispersalKernel <- "Weibull3"
 outputs <- setDF(rbindlist(list(
   data.frame(objectName = "fit_mpbSpreadOptimizer", saveTime = timesFit$end),
@@ -80,29 +84,11 @@ outputs <- setDF(rbindlist(list(
 ), use.names = FALSE))
 # paramsFit$mpbRedTopSpread$type <- "validate"
 
-message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
-MPBpredict <- Cache(
-  simInitAndSpades,
-  times = timesPredict,
-  params = paramsFit,
-  modules = modules3,
-  objects = objects3,
-  outputs = outputs,
-  loadOrder = unlist(modules3),
-  .cacheExtra = moduleCodeFiles(paths3, modules3)
-  # events = "init"
-  # useCache = "overwrite"
-)
-
-
-paramsFit$mpbRedTopSpread$type <- "predict"
-MPBpredict2YrRolling <- list()
-for (sy in 2010:2018) {
-  timesPredict <- list(start = sy, end = sy + 2)
+if (paramsFit$mpbRedTopSpread$type == "validate") {
   message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
-  MPBpredict2YrRolling[[paste0("X", sy)]] <- Cache(
+  MPBpredict <- Cache(
     simInitAndSpades,
-    times = timesPredict,
+    times = times,
     params = paramsFit,
     modules = modules3,
     objects = objects3,
@@ -113,6 +99,82 @@ for (sy in 2010:2018) {
     # useCache = "overwrite"
   )
 }
+
+# ROLLING FORECASTING WINDOWS
+if (paramsFit$mpbRedTopSpread$type == "predict" && times$start < 2020) {
+  paramsFit$mpbRedTopSpread$type <- "predict"
+  message(crayon::green("Running Rolling Forecasting"))
+  todo <- rbindlist(lapply(2:10, function(x) data.table(rollingWindow = x, sy = 2010:(2020-x))))
+  todo[, runName := paste0("RW", rollingWindow, "_", "X", sy)]
+  # todo <- todo[45,]
+  MPBpredictRolling <- parallel::mcMap(runName = todo$runName, rollingWindow = todo$rollingWindow, sy = todo$sy,
+                                       mc.cores = 4,
+                                       function(runName, rollingWindow, sy) {
+                                         rwInd <- paste0("RW", rollingWindow)
+                                         times <- list(start = sy, end = sy + rollingWindow)
+                                         message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
+                                         syNam <- paste0("X", sy)
+                                         out <- Cache(
+                                           simInitAndSpades,
+                                           times = times,
+                                           params = paramsFit,
+                                           modules = modules3,
+                                           objects = objects3,
+                                           outputs = outputs,
+                                           loadOrder = unlist(modules3),
+                                           .cacheExtra = moduleCodeFiles(paths3, modules3)
+                                           # events = "init"
+                                           # useCache = "overwrite"
+                                         )
+                                         rm(climateSuitabilityMaps, envir = out)
+                                         saveSimList(out, filename = file.path(outputPath(out), paste0("mpbRollingSim_", runName, ".qs")))
+                                         return(out)
+                                       }
+  )
+  set(todo, NULL, "ROC", sapply(MPBpredictRolling, function(sim) mean(sim$ROCList[[1]]$ROC)))
+  forecastHorizonFn <- function(todo) {
+    ggplot(todo, aes(x = rollingWindow, y = ROC)) +
+      geom_point() +
+      geom_smooth() +
+      theme_bw() +
+      xlab("Forecast horizon; years into the future") +
+      ylab("AUC (Area under the Receiver Operating Curve)")
+  }
+  Plots(fn = forecastHorizonFn, todo = todo, type = paramsFit$mpbRedTopSpread$type,
+        filename = file.path(paths3$outputPath, "figures", paste0("Forecast Horizon")))
+}
+
+
+# FORECASTING with CLIMATE UNCERTAINTY
+
+paramsFit$mpbRedTopSpread$type <- "predict"
+paramsFit$mpbClimateData$.useCache <- ".inputObjects"
+message(crayon::green("Forecasting with climate variation"))
+
+out <- simInit(##AndExperiment2,
+  times = times,
+  params = paramsFit,
+  modules = modules3,
+  objects = objects3,
+  outputs = outputs,
+#  replicates = 6,
+  loadOrder = unlist(modules3)#,
+ # .cacheExtra = moduleCodeFiles(paths3, modules3)
+  # events = "init"
+  # useCache = "overwrite"
+)
+nreps <- 4
+out2 <- mclapply(seq(nreps), function(rep) spades(Copy(out)), mc.cores = min(4, nreps))
+
+# UPLOAD FILES
+if (FALSE) {
+  Require::Require("googledrive")
+  local_files <- dir(file.path(paths3$outputPath, "figures"), full.names = TRUE)
+  driveFolder <- as_id("1L2lNlsNa6DFaC9fUFwz6MyZw3mKSWQzd")
+  files <- map(local_files, ~ drive_upload(.x, path = driveFolder, overwrite = TRUE))
+}
+
+
 if (FALSE) {
   projDir <- getwd()
   objectiveFunction <- function(params) {
