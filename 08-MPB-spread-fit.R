@@ -4,11 +4,12 @@ do.call(SpaDES.core::setPaths, paths3)
 
 timesFit <- list(start = 2010, end = 2020) ## 2010-2016
 paramsFit <- list(
+  .globals = list(.plots = "png"),
   mpbClimateData = list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
-    .useCache = eventCaching,
-    .plots = "hello"
+    .useCache = eventCaching
+    # .plots = ""
     # .plotInitialTime = NA#,
     #.tempdir = scratchDir
   ),
@@ -25,21 +26,17 @@ paramsFit <- list(
     .plotInitialTime = NA#,
     #.tempdir = scratchDir
   ),
-  # mpbRedTopGrowth = list(
-  #   .useCache = eventCaching,
-  #   .plotInitialTime = NA,
-  #   dataset = "Boone2011"
-  # ),
   mpbRedTopSpread = list(
-    p_advectionDir = 90,
+    # p_advectionDir = 90, # not used anymore
     p_advectionMag = 1000,
-    bgSettlingProp = 0.1,
     p_meanDist = 1000,
     maxDistance = 1e5,
-    .plots = "screen",
-    type = if (Require:::isWindows() || amc::isRstudio()) "runOnce" else "DEoptim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
+    dispersalKernel = "Generalized Gamma", # Weibull3
+    # .plots = "screen",
+    type = if (Require:::isWindows() || amc::isRstudio()) "validate" else "optim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
   )
 )
+
 
 objects3 <- list(
   studyArea = simOutPreamble$studyArea,
@@ -50,22 +47,44 @@ objects3 <- list(
 modules3 <- list(
   "mpbClimateData", "mpbPine",
   "mpbMassAttacksData",
-#  "mpbRedTopGrowth",
   "mpbRedTopSpread"#,
   #"mpbManagement"
 )
 
-MPBfit <- #Cache(
-  simInitAndSpades(
+if (!(Require:::isWindows() || amc::isRstudio()))
+  MPBfit <- Cache(
+    simInitAndSpades,
     times = timesFit,
     params = paramsFit,
     modules = modules3,
     objects = objects3,
-    loadOrder = unlist(modules3)#,
-    # .cacheExtra = moduleCodeFiles(paths3, modules3)
+    loadOrder = unlist(modules3),
+    .cacheExtra = moduleCodeFiles(paths3, modules3)
     # events = "init"
     # useCache = "overwrite"
   )
+
+#########################################################################################
+# For Forecasting -- use a specific DEout object
+DEoutFileList <- dir(dirname(paths3$outputPath), pattern = "DEout", full.names = TRUE)
+DEout <- readRDS(DEoutFileList[[24]])
+objects3 <- append(objects3,
+                   list(DEout = DEout))
+timesPredict <- list(start = 2010, end = 2020) ## 2010-2016
+paramsFit$mpbRedTopSpread$dispersalKernel <- "Weibull3"
+# paramsFit$mpbRedTopSpread$type <- "validate"
+
+MPBpredict <- Cache(
+  simInitAndSpades,
+  times = timesPredict,
+  params = paramsFit,
+  modules = modules3,
+  objects = objects3,
+  loadOrder = unlist(modules3),
+  .cacheExtra = moduleCodeFiles(paths3, modules3)
+  # events = "init"
+  # useCache = "overwrite"
+)
 
 if (FALSE) {
   projDir <- getwd()
@@ -105,7 +124,7 @@ if (FALSE) {
 
     params(sim)[["mpbRedTopSpread"]][["p_advectionDir"]] <- params[1]
     params(sim)[["mpbRedTopSpread"]][["p_advectionMag"]] <- params[2]
-    params(sim)[["mpbRedTopSpread"]][["bgSettlingProp"]] <- params[3]
+    # params(sim)[["mpbRedTopSpread"]][["bgSettlingProp"]] <- params[3]
     params(sim)[["mpbRedTopSpread"]][["p_meanDist"]] <- params[4]
 
     simOut <- spades(sim, .plotInitialTime = NA, debug = FALSE)
@@ -133,7 +152,8 @@ if (FALSE) {
   }
 
   params4POM <- data.frame(
-    name = c("p_advectionDir", "p_advectionMag", "bgSettlingProp", "p_meanDist"),
+    name = c("p_advectionDir", "p_advectionMag", #"bgSettlingProp",
+             "p_meanDist"),
     lower = c(  0.000,   10, 0.01,   100),
     upper = c(359.999, 1000, 0.20, 10000), ## TODO: refine these upper and lower limits
     stringsAsFactors = FALSE
@@ -176,7 +196,9 @@ if (FALSE) {
   #MPBfit <- loadSimList(file.path(Paths$outputPath, "test.qs"))
 
   ## MPB spread fit Summarios
-  paramNames <- c("p_advectionDir", "p_advectionMag", "bgSettlingProp", "p_meanDist")
+  paramNames <- c("p_advectionDir", "p_advectionMag",
+                  #"bgSettlingProp",
+                  "p_meanDist")
 
   bestValues <- as.data.frame(outPOM[["member"]][["bestmemit"]])
   colnames(bestValues) <- paramNames
@@ -190,8 +212,8 @@ if (FALSE) {
   plot(bestValues$p_advectionMag)
   points(bestFitVals$p_advectionMag, col = "red", pch = 19)
 
-  plot(bestValues$bgSettlingProp)
-  points(bestFitVals$bgSettlingProp, col = "red", pch = 19)
+  #plot(bestValues$bgSettlingProp)
+  #points(bestFitVals$bgSettlingProp, col = "red", pch = 19)
 
   plot(bestValues$p_meanDist)
   points(bestFitVals$p_meanDist, col = "red", pch = 19)
