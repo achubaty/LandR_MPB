@@ -31,9 +31,9 @@ paramsFit <- list(
     p_advectionMag = 1000,
     p_meanDist = 1000,
     maxDistance = 1e5,
-    dispersalKernel = "Generalized Gamma", # Weibull3
+    dispersalKernel = "twodt",# "Generalized Gamma", # Weibull3
     # .plots = "screen",
-    type = if (Require:::isWindows() || amc::isRstudio()) "predict" else "optim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "validate" else "optim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
@@ -51,6 +51,8 @@ modules3 <- list(
   #"mpbManagement"
 )
 
+
+
 if (!(Require:::isWindows() || amc::isRstudio()))
   MPBfit <- Cache(
     simInitAndSpades,
@@ -65,27 +67,52 @@ if (!(Require:::isWindows() || amc::isRstudio()))
   )
 
 #########################################################################################
-# For Forecasting -- use a specific DEout object
+# For Forecasting -- use a specific fit_mpbSpreadOptimizer object
 DEoutFileList <- dir(dirname(paths3$outputPath), pattern = "DEout", full.names = TRUE)
-DEout <- readRDS(DEoutFileList[[24]])
+fit_mpbSpreadOptimizer <- readRDS(DEoutFileList[[24]]) # 24 is currently best of my files (Eliot)
 objects3 <- append(objects3,
-                   list(DEout = DEout))
+                   list(fit_mpbSpreadOptimizer = fit_mpbSpreadOptimizer))
 timesPredict <- list(start = 2010, end = 2020) ## 2010-2016
 paramsFit$mpbRedTopSpread$dispersalKernel <- "Weibull3"
+outputs <- setDF(rbindlist(list(
+  data.frame(objectName = "fit_mpbSpreadOptimizer", saveTime = timesFit$end),
+  data.table("ROCList", saveTime = timesFit$end)
+), use.names = FALSE))
 # paramsFit$mpbRedTopSpread$type <- "validate"
 
+message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
 MPBpredict <- Cache(
   simInitAndSpades,
   times = timesPredict,
   params = paramsFit,
   modules = modules3,
   objects = objects3,
+  outputs = outputs,
   loadOrder = unlist(modules3),
   .cacheExtra = moduleCodeFiles(paths3, modules3)
   # events = "init"
   # useCache = "overwrite"
 )
 
+
+paramsFit$mpbRedTopSpread$type <- "predict"
+MPBpredict2YrRolling <- list()
+for (sy in 2010:2018) {
+  timesPredict <- list(start = sy, end = sy + 2)
+  message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
+  MPBpredict2YrRolling[[paste0("X", sy)]] <- Cache(
+    simInitAndSpades,
+    times = timesPredict,
+    params = paramsFit,
+    modules = modules3,
+    objects = objects3,
+    outputs = outputs,
+    loadOrder = unlist(modules3),
+    .cacheExtra = moduleCodeFiles(paths3, modules3)
+    # events = "init"
+    # useCache = "overwrite"
+  )
+}
 if (FALSE) {
   projDir <- getwd()
   objectiveFunction <- function(params) {
