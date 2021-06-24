@@ -29,3 +29,4 @@ Require("SpaDES.core (>= 1.0.8)",
 Require("achubaty/amc (>= 0.2.0)", require = FALSE, which = c("Suggests", "Imports", "Depends"))
 Require("jimhester/archive", upgrade = FALSE)
 Require("slackr", require = FALSE)
+# Require("PredictiveEcology/SpaDES.experiment@development")
