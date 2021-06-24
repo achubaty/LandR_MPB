@@ -33,7 +33,7 @@ paramsFit <- list(
     maxDistance = 1e5,
     dispersalKernel = "Generalized Gamma", # Weibull3
     # .plots = "screen",
-    type = if (Require:::isWindows() || amc::isRstudio()) "validate" else "optim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "predict" else "optim" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
