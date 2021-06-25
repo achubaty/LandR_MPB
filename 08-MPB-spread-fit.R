@@ -4,7 +4,7 @@ do.call(SpaDES.core::setPaths, paths3)
 
 timesFit <- list(start = 2010, end = 2020) ## 2010-2016
 times <- list(start = 2010, end = 2020) ## 2010-2016
-timesForecast <- list(start = 2020, end = 2022) ## 2010-2016
+timesForecast <- list(start = 2020, end = 2030) ## 2010-2016
 
 times <- timesForecast
 
@@ -38,7 +38,7 @@ paramsFit <- list(
     maxDistance = 1e5,
     dispersalKernel = "twodt",# "Generalized Gamma", # Weibull3
     # .plots = "screen",
-    type = if (Require:::isWindows() || amc::isRstudio()) "predict" else "predict" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
+    type = if (Require:::isWindows() || amc::isRstudio()) "validate" else "predict" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
   )
 )
 
@@ -140,7 +140,7 @@ if (paramsFit$mpbRedTopSpread$type == "predict" && times$start < 2020) {
       xlab("Forecast horizon; years into the future") +
       ylab("AUC (Area under the Receiver Operating Curve)")
   }
-  Plots(fn = forecastHorizonFn, todo = todo, type = paramsFit$mpbRedTopSpread$type,
+  Plots(fn = forecastHorizonFn, todo = todo, type = paramsFit$.globals$.plots,
         filename = file.path(paths3$outputPath, "figures", paste0("Forecast Horizon")))
 }
 
@@ -163,16 +163,34 @@ out <- simInit(##AndExperiment2,
   # events = "init"
   # useCache = "overwrite"
 )
-nreps <- 4
+nreps <- 10
+RNGkind("L'Ecuyer-CMRG")
+# out2 <- lapply(seq(nreps), function(rep) spades(Copy(out)))
 out2 <- mclapply(seq(nreps), function(rep) spades(Copy(out)), mc.cores = min(4, nreps))
+out3 <- lapply(out2, function(sim) sim$predictedDT[, list(meanATKTREES = mean(ATKTREES, na.rm = TRUE)), by = "layerName"])
+out4 <- rbindlist(out3, idcol = "rep")
+saveRDS(out4, file = file.path(paths3$outputPath, "Forecasts with ConfInt.rds"))
+
+plot_smoothPoint <- function(dt)  {
+  ggplot(dt, aes(y = meanATKTREES, x = as.integer(gsub("X", "", layerName)))) +
+    geom_point() +
+    geom_smooth() +
+    scale_y_continuous(trans = "log10") +
+    theme_bw() +
+    xlab("Year") +
+    ylab("Forecasted Mean Attack Density (per km2 of attacked pixels)")
+}
+
+Plots(dt = out4, fn = plot_smoothPoint, type = paramsFit$.globals$.plots,
+      filename = file.path(paths3$outputPath, "figures", paste0("Forecast Abundance")))
 
 # UPLOAD FILES
-if (FALSE) {
+# if (FALSE) {
   Require::Require("googledrive")
   local_files <- dir(file.path(paths3$outputPath, "figures"), full.names = TRUE)
   driveFolder <- as_id("1L2lNlsNa6DFaC9fUFwz6MyZw3mKSWQzd")
   files <- map(local_files, ~ drive_upload(.x, path = driveFolder, overwrite = TRUE))
-}
+# }
 
 
 if (FALSE) {
