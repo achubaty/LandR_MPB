@@ -7,9 +7,6 @@
 [submodule "modules/mpbPine"]
 	path = modules/mpbPine
 	url = https://github.com/achubaty/mpbPine
-[submodule "modules/mpbRedTopGrowth"]
-	path = modules/mpbRedTopGrowth
-	url = https://github.com/achubaty/mpbRedTopGrowth
 [submodule "modules/mpbRedTopSpread"]
 	path = modules/mpbRedTopSpread
 	url = https://github.com/achubaty/mpbRedTopSpread
