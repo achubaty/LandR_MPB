@@ -1,4 +1,4 @@
-## MPB_boreal
+## LandR_MPB
 
 ### Mountain Pine Beetle Red Top Model
 
@@ -18,7 +18,7 @@ Evaluate short-run potential for MPB establishment, eruption, and spread in Cana
 
 ### Modules
 
-- [MPB_boreal_studyArea](https://github.com/achubaty/MPB_boreal_studyArea)
+- [LandR_MPB_studyArea](https://github.com/achubaty/LandR_MPB_studyArea)
 - [mpbClimateData](https://github.com/achubaty/mpbClimateData)
 - [mpbMassAttacksData](https://github.com/achubaty/mpbMassAttacksData)
 - [mpbPine](https://github.com/achubaty/mpbPine)

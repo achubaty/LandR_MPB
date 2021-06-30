@@ -2,7 +2,7 @@
 
 do.call(SpaDES.core::setPaths, paths1)
 
-modules1 <- list("MPB_SK_studyArea")
+modules1 <- list("LandR_MPB_studyArea")
 
 objects1 <- list()
 
