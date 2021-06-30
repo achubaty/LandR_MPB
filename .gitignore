@@ -47,3 +47,5 @@ packages/
 MPB_AERIAL_SURVEY.gdb/
 
 J4RTmpFile
+
+*.html
