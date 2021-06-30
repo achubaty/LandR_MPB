@@ -1,3 +1,6 @@
+[submodule "modules/LandR_MPB_studyArea"]
+	path = modules/LandR_MPB_studyArea
+	url = https://github.com/achubaty/LandR_MPB_studyArea
 [submodule "modules/mpbClimateData"]
 	path = modules/mpbClimateData
 	url = https://github.com/achubaty/mpbClimateData
