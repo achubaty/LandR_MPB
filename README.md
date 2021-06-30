@@ -33,7 +33,7 @@ Code that is shared among modules was bundled into R packages, and hosted in ope
 All package code is automatically and regularly tested using cross-platform continuous integration frameworks to ensure the code is reliable and free of errors.
 
 ```bash
-## master branch
+## main branch
 git clone --recurse-submodules -j8 https://github.com/achubaty/LandR_MPB
 
 ## development branch
