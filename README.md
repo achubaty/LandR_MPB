@@ -34,10 +34,10 @@ All package code is automatically and regularly tested using cross-platform cont
 
 ```bash
 ## master branch
-git clone --recurse-submodules -j8 https://github.com/achubaty/MPB_boreal
+git clone --recurse-submodules -j8 https://github.com/achubaty/LandR_MPB
 
 ## development branch
-git clone --single-branch -b development --recurse-submodules -j8 https://github.com/achubaty/MPB_boreal
+git clone --single-branch -b development --recurse-submodules -j8 https://github.com/achubaty/LandR_MPB
 ```
 
 ### Prerequisites
