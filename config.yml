@@ -4,6 +4,7 @@ default:
   cacheformat: "qs"
   codechecks: true
   delaystart: 0
+  dtthreads: 2
   googleuser: ""
   inputpaths: null
   lowmemory: false
@@ -43,6 +44,7 @@ eliot:
   inherits: default
   cachedb: "sqlite"
   cacheformat: "qs"
+  dtthreads: 1
   googleuser: "eliotmcintire@gmail.com"
   codechecks: true ## TODO: set false after all fixed
   paths:

@@ -16,7 +16,7 @@ cacheDBconn <- if (config::get("cachedb") == "sqlite") {
 
 rep <- config::get("rep")
 
-maxMemory <- 5e+9
+maxMemory <- 6e+10
 
 rasterOptions(default = TRUE)
 opts <- options(
@@ -47,6 +47,8 @@ opts <- options(
   "spades.restartR.restartDir" = paths3$outputPath,
   "spades.useRequire" = FALSE # Don't use Require... meaning assume all pkgs installed
 )
+
+setDTthreads(DTthreads)
 
 Require("googledrive")
 

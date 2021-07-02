@@ -22,7 +22,7 @@ if (!require("BioSIM", quietly = TRUE)) {
 
 Require("PredictiveEcology/SpaDES.install (>= 0.0.4.9000)")
 out <- makeSureAllPackagesInstalled(modulePath = "modules")
-Require(c("data.table", "plyr", "pryr", "raster")) ## ensure plyr loaded before dplyr or there will be problems
+Require(c("data.table", "plyr", "pryr", "raster", "parallel")) ## ensure plyr loaded before dplyr or there will be problems
 Require("SpaDES.core (>= 1.0.8)",
         which = c("Suggests", "Imports", "Depends"), upgrade = FALSE) # need Suggests in SpaDES.core
 
