@@ -59,6 +59,7 @@ token <- NA_character_
 if (is.na(token) || !file.exists(token))
   message(crayon::red("No Google service token found; authenticating with user token..."))
 
-drive_auth(email = config::get("googleuser"), use_oob = quickPlot::isRstudioServer())
+drive_auth(email = config::get("googleuser"), use_oob = quickPlot::isRstudioServer(),
+           cache = config::get("googleauthcache"))
 
 message(crayon::silver("Authenticating as: "), crayon::green(drive_user()$emailAddress))
