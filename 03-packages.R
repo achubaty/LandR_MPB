@@ -4,11 +4,11 @@ if (!Require:::isWindows()) {
   need_reinstall_spatial <- tryCatch(!nzchar(rgdal::getGDALVersionInfo()), error = function(e) TRUE)
   gdal_version <- numeric_version(system("pkg-config --modversion gdal", intern = TRUE))
   proj_version <- numeric_version(system("pkg-config --modversion proj", intern = TRUE))
-if (need_reinstall_spatial) {
-  spatialPkgs <- c("rgdal", "rgeos", "sf", "sp", "raster", "terra")
-  if (gdal_version > "3.2" | proj_version > "7.2") {
-    install.packages(spatialPkgs, repos = "https://cran.rstudio.com") ## install from source
-  } else {
+  if (need_reinstall_spatial) {
+    spatialPkgs <- c("rgdal", "rgeos", "sf", "sp", "raster", "terra")
+    if (gdal_version > "3.2" | proj_version > "7.2") {
+      install.packages(spatialPkgs, repos = "https://cran.rstudio.com") ## install from source
+    } else {
       install.packages(spatialPkgs) ## install from RSPM binaries
     }
   }
@@ -22,7 +22,7 @@ if (!require("BioSIM", quietly = TRUE)) {
                    repos = NULL,  type = "source")
 }
 
-Require("PredictiveEcology/SpaDES.install (>= 0.0.4.9000)")
+Require("PredictiveEcology/SpaDES.install@development (>= 0.0.4.9000)")
 out <- makeSureAllPackagesInstalled(modulePath = "modules")
 Require(c("data.table", "plyr", "pryr", "raster", "parallel")) ## ensure plyr loaded before dplyr or there will be problems
 Require("SpaDES.core (>= 1.0.8)",
