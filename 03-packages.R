@@ -1,14 +1,16 @@
 ## Ubuntu 20.04 ships with GDAL 3.0 and PROJ 6.3, which is what RSPM builds with
 ## If using newer versions from ubuntu-gis ppa, need to install spatial packages from source
-need_reinstall_spatial <- tryCatch(!nzchar(rgdal::getGDALVersionInfo()), error = function(e) TRUE)
-gdal_version <- numeric_version(system("pkg-config --modversion gdal", intern = TRUE))
-proj_version <- numeric_version(system("pkg-config --modversion proj", intern = TRUE))
+if (!Require:::isWindows()) {
+  need_reinstall_spatial <- tryCatch(!nzchar(rgdal::getGDALVersionInfo()), error = function(e) TRUE)
+  gdal_version <- numeric_version(system("pkg-config --modversion gdal", intern = TRUE))
+  proj_version <- numeric_version(system("pkg-config --modversion proj", intern = TRUE))
 if (need_reinstall_spatial) {
   spatialPkgs <- c("rgdal", "rgeos", "sf", "sp", "raster", "terra")
   if (gdal_version > "3.2" | proj_version > "7.2") {
     install.packages(spatialPkgs, repos = "https://cran.rstudio.com") ## install from source
   } else {
-    install.packages(spatialPkgs) ## install from RSPM binaries
+      install.packages(spatialPkgs) ## install from RSPM binaries
+    }
   }
 }
 
