@@ -27,7 +27,8 @@ Require("slackr", require = FALSE)
 
 
 # Installs and Loads
-Require(c("data.table", "plyr", "pryr", "raster", "config")) ## ensure plyr loaded before dplyr or there will be problems
+Require(c("data.table", "plyr", "pryr", "raster", "config",
+          "googledrive", "httr")) ## ensure plyr loaded before dplyr or there will be problems
 if (!require("BioSIM", quietly = TRUE)) {
   ## https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
   install.packages("https://sourceforge.net/projects/repiceasource/files/latest",
