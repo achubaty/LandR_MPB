@@ -31,7 +31,7 @@ paramsFit <- list(
   mpbClimateData = list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
-    .useCache = eventCaching
+    .useCache = "init"
     # .plots = ""
     # .plotInitialTime = NA#,
     #.tempdir = scratchDir
