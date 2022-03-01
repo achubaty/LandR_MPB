@@ -1,6 +1,5 @@
 ## cache database connection (requires reproducbile >= 1.0.0)
 cacheDBconn <- if (config::get("cachedb") == "sqlite") {
-  Require("RSQLite")
   NULL
 } else if (config::get("cachedb") == "postgresql") {
   Require("RPostgres")
@@ -49,8 +48,6 @@ opts <- options(
 )
 
 setDTthreads(DTthreads)
-
-Require("googledrive")
 
 httr::set_config(httr::config(http_version = 0))
 

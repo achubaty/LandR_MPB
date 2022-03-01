@@ -2,8 +2,6 @@ if (file.exists(".Renviron")) readRenviron(".Renviron")
 
 .starttime <- Sys.time()
 
-Require("config")
-
 cacheDir <- config::get("paths")[["cachedir"]]
 cacheFormat <- config::get("cacheformat")
 codeChecks <- config::get("codechecks")
