@@ -13,13 +13,6 @@ if (!exists("pkgDir")) {
   .libPaths(pkgDir)
 }
 
-if (!suppressWarnings(require("Require", quietly = TRUE))) {
-  if (!require("drat")) install.packages("drat")
-  drat::addRepo("PredictiveEcology")
-  install.packages("Require")
-  library(Require)
-}
-
 #devtools::install("../reproducible")
 #devtools::load_all("~/GitHub/SpaDES.tools")
 #devtools::load_all("~/GitHub/SpaDES.core")
@@ -31,9 +24,9 @@ switch(Sys.info()[["user"]],
 )
 #Sys.getenv("R_CONFIG_ACTIVE") ## verify
 
+source("03-packages.R")
 source("01-init.R")
 source("02-paths.R")
-source("03-packages.R")
 source("04-options.R")
 #source("05-google-ids.R") ## gets sourced at top of each script 06, 07x, 08x
 
