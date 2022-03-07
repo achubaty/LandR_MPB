@@ -1,30 +1,30 @@
 ## run the simulation
 do.call(SpaDES.core::setPaths, paths3)
 
-data.table::setDTthreads(useParallel)
+data.table::setDTthreads(1)
 
-timesPredict <- list(start = 2016, end = 2016) ## 2017-2020
+modules4 <- unique(c(unlist(modules3), c("Biomass_borealDataPrep", "Biomass_core", "Biomass_regeneration")))
+timesPredict <- list(start = 2016, end = 2018) ## 2017-2020
 
 paramsPredict <- paramsFit
-paramsPredict[["mpbRedTopSpread"]][["advectionDir"]] <- bestFitVals$advectionDir
-paramsPredict[["mpbRedTopSpread"]][["p_advectionMag"]] <- bestFitVals$p_advectionMag
-# paramsPredict[["mpbRedTopSpread"]][["bgSettlingProp"]] <- bestFitVals$bgSettlingProp
-paramsPredict[["mpbRedTopSpread"]][["p_meanDist"]] <- bestFitVals$p_meanDist
+paramsPredict[["mpbRedTopSpread"]] <-
+  modifyList(paramsPredict[["mpbRedTopSpread"]], as.list(apply(MPBfit$fit_mpbSpreadOptimizer$member$pop, 2, mean)))
 
 tryCatch({
   mySimOut <- Cache(simInitAndSpades, times = timesPredict, #cl = cl,
                     params = paramsPredict,
-                    modules = modules3,
+                    modules = modules4,
                     #outputs = outputs3,
                     objects = objects3,
                     paths = paths3,
                     loadOrder = unlist(modules3),
-                    debug = list(file = list(file = file.path(Paths$outputPath, "sim.log"),
-                                             append = TRUE), debug = 1),
+                    #debug = list(file = list(file = file.path(Paths$outputPath, "sim.log"),
+                    #                         append = TRUE), debug = 1),
                     useCloud = FALSE,
                     cloudFolderID = cloudCacheFolderID,
-                    omitArgs = c("debug", "paths", ".plotInitialTime"),
-                    .plotInitialTime = .plotInitialTime)
+                    omitArgs = c("paths"),
+                    .plots = "png",
+                    .plotInitialTime = timesPredict$start)
 }, error = function(e) {
   if (requireNamespace("slackr") & file.exists("~/.slackr")) {
     slackr::slackr_setup()
