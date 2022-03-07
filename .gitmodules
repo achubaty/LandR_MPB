@@ -13,3 +13,12 @@
 [submodule "modules/mpbRedTopSpread"]
 	path = modules/mpbRedTopSpread
 	url = https://github.com/achubaty/mpbRedTopSpread
+[submodule "modules/Biomass_core"]
+	path = modules/Biomass_core
+	url = git@github.com:PredictiveEcology/Biomass_core.git
+[submodule "modules/Biomass_regeneration"]
+	path = modules/Biomass_regeneration
+	url = git@github.com:PredictiveEcology/Biomass_regeneration.git
+[submodule "modules/Biomass_borealDataPrep"]
+	path = modules/Biomass_borealDataPrep
+	url = git@github.com:PredictiveEcology/Biomass_borealDataPrep.git
