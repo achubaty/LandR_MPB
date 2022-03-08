@@ -87,8 +87,9 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
     objects = objects3,
     loadOrder = unlist(modules3),
     .cacheExtra = moduleCodeFiles(paths3, modules3),
-    useCloud = TRUE, userTags = c("MPB 08 Fit"),
-    cloudFolderID = cloudCacheFolderID # Eliot's Gdrive: Hosted/BioSIM/ folder
+    #useCloud = TRUE,
+    userTags = c("MPB 08 Fit")
+    #cloudFolderID = cloudCacheFolderID # Eliot's Gdrive: Hosted/BioSIM/ folder
     # events = "init"
     # useCache = "overwrite"
   )
