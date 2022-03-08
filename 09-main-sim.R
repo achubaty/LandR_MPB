@@ -10,26 +10,35 @@ paramsPredict <- paramsFit
 paramsPredict[["mpbRedTopSpread"]] <-
   modifyList(paramsPredict[["mpbRedTopSpread"]], as.list(apply(MPBfit$fit_mpbSpreadOptimizer$member$pop, 2, mean)))
 
-species <- LandR::speciesInStudyArea(objects3$studyArea)
+species <- Cache(LandR::speciesInStudyArea, objects3$studyArea)
 objects3$sppNameVector <- grep("_Spp", species$speciesList, invert = TRUE, value = TRUE)
 objects3$studyAreaLarge <- objects3$studyArea
 
-paramsPredict$Biomass_regeneration$fireInitialTime <- timesPredict$start
+paramsPredict <- modifyList2( # updates only those parameters specified, nested lists
+  paramsPredict,
+  list(Biomass_regeneration = list(fireInitialTime = timesPredict$start),
+       Biomass_borealDataPrep = list(.useCache = c(".inputObjects", "init"),
+                                     .plots = ""),
+       mpbClimateData  = list(.useCache = "init"),
+       mpbRedTopSpread = append(as.list(apply(MPBfit$fit_mpbSpreadOptimizer$member$pop, 2, mean)),
+                                list(type = c("DEoptim", "predict")))
+  ))
+
 # tryCatch({
-  mySimOut <- Cache(simInitAndSpades, times = timesPredict, #cl = cl,
-                    params = paramsPredict,
-                    modules = modules4,
-                    #outputs = outputs3,
-                    objects = objects3,
-                    paths = paths3,
-                    loadOrder = unlist(modules3),
-                    #debug = list(file = list(file = file.path(Paths$outputPath, "sim.log"),
-                    #                         append = TRUE), debug = 1),
-                    useCloud = FALSE,
-                    cloudFolderID = cloudCacheFolderID,
-                    omitArgs = c("paths"),
-                    .plots = "png",
-                    .plotInitialTime = timesPredict$start)
+mySimOut <- Cache(simInitAndSpades, times = timesPredict, #cl = cl,
+                  params = paramsPredict,
+                  modules = modules4,
+                  #outputs = outputs3,
+                  objects = objects3,
+                  paths = paths3,
+                  loadOrder = unlist(modules3),
+                  #debug = list(file = list(file = file.path(Paths$outputPath, "sim.log"),
+                  #                         append = TRUE), debug = 1),
+                  useCloud = FALSE,
+                  cloudFolderID = cloudCacheFolderID,
+                  omitArgs = c("paths"),
+                  .plots = "png",
+                  .plotInitialTime = timesPredict$start)
 # }, error = function(e) {
 #   if (requireNamespace("slackr") & file.exists("~/.slackr")) {
 #     slackr::slackr_setup()
