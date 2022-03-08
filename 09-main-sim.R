@@ -10,7 +10,12 @@ paramsPredict <- paramsFit
 paramsPredict[["mpbRedTopSpread"]] <-
   modifyList(paramsPredict[["mpbRedTopSpread"]], as.list(apply(MPBfit$fit_mpbSpreadOptimizer$member$pop, 2, mean)))
 
-tryCatch({
+species <- LandR::speciesInStudyArea(objects3$studyArea)
+objects3$sppNameVector <- grep("_Spp", species$speciesList, invert = TRUE, value = TRUE)
+objects3$studyAreaLarge <- objects3$studyArea
+
+paramsPredict$Biomass_regeneration$fireInitialTime <- timesPredict$start
+# tryCatch({
   mySimOut <- Cache(simInitAndSpades, times = timesPredict, #cl = cl,
                     params = paramsPredict,
                     modules = modules4,
@@ -25,23 +30,23 @@ tryCatch({
                     omitArgs = c("paths"),
                     .plots = "png",
                     .plotInitialTime = timesPredict$start)
-}, error = function(e) {
-  if (requireNamespace("slackr") & file.exists("~/.slackr")) {
-    slackr::slackr_setup()
-    slackr::text_slackr(
-      paste0("ERROR in simulation `", runName, "` on host `", Sys.info()[["nodename"]], "`.\n",
-             "```\n", e$message, "\n```"),
-      channel = config::get("slackchannel"), preformatted = FALSE
-    )
-    stop(e$message)
-  }
-})
-
-cat(capture.output(warnings()), file = file.path(Paths$outputPath, "warnings.txt"))
-
-fsim <- simFile("mySimOut", Paths$outputPath, SpaDES.core::end(mySimOut), "qs")
-message("Saving simulation to: ", fsim)
-saveSimList(sim = mySimOut, filename = fsim)
+# }, error = function(e) {
+#   if (requireNamespace("slackr") & file.exists("~/.slackr")) {
+#     slackr::slackr_setup()
+#     slackr::text_slackr(
+#       paste0("ERROR in simulation `", runName, "` on host `", Sys.info()[["nodename"]], "`.\n",
+#              "```\n", e$message, "\n```"),
+#       channel = config::get("slackchannel"), preformatted = FALSE
+#     )
+#     stop(e$message)
+#   }
+# })
+#
+# cat(capture.output(warnings()), file = file.path(Paths$outputPath, "warnings.txt"))
+#
+# fsim <- simFile("mySimOut", Paths$outputPath, SpaDES.core::end(mySimOut), "qs")
+# message("Saving simulation to: ", fsim)
+# saveSimList(sim = mySimOut, filename = fsim)
 
 
 ## simulation diagrams
