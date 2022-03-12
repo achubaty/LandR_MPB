@@ -1,5 +1,6 @@
 default:
   batchmode: false
+  assertions: true
   cachedb: "sqlite"
   cacheformat: "qs"
   codechecks: true
@@ -43,6 +44,7 @@ alex:
 
 eliot:
   inherits: default
+  assertions: false
   cachedb: "sqlite"
   cacheformat: "qs"
   dtthreads: 1
@@ -56,4 +58,4 @@ eliot:
   slackchannel: "@eliotmcintire"
   useprerun: !expr if (grepl("spades", Sys.info()[["nodename"]])) TRUE else FALSE
   inputpaths: ~/data
-  usememoise: true
+  usememoise: false
