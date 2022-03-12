@@ -21,6 +21,7 @@ rasterOptions(default = TRUE)
 opts <- options(
   "fftempdir" = scratchDir,
   "future.globals.maxSize" = 1000*1024^2,
+  "LandR.assertions" = config::get("assertions"),
   "rasterMaxMemory" = maxMemory,
   "rasterTmpDir" = scratchDir,
   "reproducible.cachePath" = file.path(scratchDir, "cache"),
