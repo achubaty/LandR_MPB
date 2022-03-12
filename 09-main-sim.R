@@ -4,7 +4,7 @@ do.call(SpaDES.core::setPaths, paths3)
 data.table::setDTthreads(1)
 
 modules4 <- unique(c(unlist(modules3), c("Biomass_borealDataPrep", "Biomass_core", "Biomass_regeneration")))
-timesPredict <- list(start = 2016, end = 2018) ## 2017-2020
+timesPredict <- list(start = 2015, end = 2030) ## 2017-2020
 
 paramsPredict <- paramsFit
 paramsPredict[["mpbRedTopSpread"]] <-
@@ -16,12 +16,18 @@ objects3$studyAreaLarge <- objects3$studyArea
 
 paramsPredict <- modifyList2( # updates only those parameters specified, nested lists
   paramsPredict,
-  list(Biomass_regeneration = list(fireInitialTime = timesPredict$start),
-       Biomass_borealDataPrep = list(.useCache = c(".inputObjects", "init"),
-                                     .plots = ""),
+  list(.globals = list(.plots = "",
+                       stemsPerHaAvg = 1125),
+       Biomass_regeneration = list(fireInitialTime = timesPredict$start),
+       Biomass_core = list(.useCache = "init"),
+       Biomass_borealDataPrep = list(.useCache = c("init"),
+                                     dataYear = 2011),
        mpbClimateData  = list(.useCache = "init"),
+       mpbPine = list(.useCache = ""),
        mpbRedTopSpread = append(as.list(apply(MPBfit$fit_mpbSpreadOptimizer$member$pop, 2, mean)),
-                                list(type = c("DEoptim", "predict")))
+                                list(type = c("predict"),
+                                     coresForPrediction = 6,
+                                     .useCache = ""))
   ))
 
 # tryCatch({
@@ -31,13 +37,14 @@ mySimOut <- Cache(simInitAndSpades, times = timesPredict, #cl = cl,
                   #outputs = outputs3,
                   objects = objects3,
                   paths = paths3,
-                  loadOrder = unlist(modules3),
+                  loadOrder = unlist(modules4),
+                  # debug = NA,
                   #debug = list(file = list(file = file.path(Paths$outputPath, "sim.log"),
                   #                         append = TRUE), debug = 1),
                   useCloud = FALSE,
                   cloudFolderID = cloudCacheFolderID,
                   omitArgs = c("paths"),
-                  .plots = "png",
+#                   .plots = "png",
                   .plotInitialTime = timesPredict$start)
 # }, error = function(e) {
 #   if (requireNamespace("slackr") & file.exists("~/.slackr")) {
