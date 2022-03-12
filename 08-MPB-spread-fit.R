@@ -2,24 +2,24 @@
 
 do.call(SpaDES.core::setPaths, paths3)
 
-runName <- if (Require:::isWindows() || amc::isRstudio()) "fit" else "backcast" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
+runNameMPB <- if (Require:::isWindows() || amc::isRstudio()) "fit" else "backcast" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
 climateMapRandomize = NULL
 times <- list(start = 2010, end = 2020) ## 2010-2016
 
-if (runName %in% c("fit", "runOnce")) {
+if (runNameMPB %in% c("fit", "runOnce")) {
   type <- "DEoptim"
 }
-if (runName %in% c("validate", "parameter")) {
+if (runNameMPB %in% c("validate", "parameter")) {
   type <- "validate"
 }
-if (runName %in% "backcast") {
+if (runNameMPB %in% "backcast") {
   times <- list(start = 2010, end = 2020) ## 2010-2016
   type <- "predict"
 }
-if (runName %in% "runOnce") {
+if (runNameMPB %in% "runOnce") {
   type <- "runOnce"
 }
-if (runName %in% "forecast") {
+if (runNameMPB %in% "forecast") {
   times <- list(start = 2020, end = 2030) ## 2010-2016
   type <- "predict"
   climateMapRandomize = TRUE
@@ -27,7 +27,7 @@ if (runName %in% "forecast") {
 
 
 paramsFit <- list(
-  .globals = list(.plots = "png"),
+  .globals = list(.plots = ""),
   mpbClimateData = list(
     suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
     .maxMemory = maxMemory,
@@ -108,7 +108,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
   ), use.names = FALSE))
   # paramsFit$mpbRedTopSpread$type <- "validate"
 
-  if (runName == "validate") {
+  if (runNameMPB == "validate") {
     message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
     MPBpredict <- Cache(
       simInitAndSpades,
@@ -127,8 +127,8 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
 
   RNGkind("L'Ecuyer-CMRG")
   ## Test a parameter varying
-  if (runName == "parameter") {
-    message(crayon::green("RUNNING", runName))
+  if (runNameMPB == "parameter") {
+    message(crayon::green("RUNNING", runNameMPB))
     todo <- data.table(tpps = 1:4/100)
     sleeps <- seq_len(NROW(todo))
     # browser()
@@ -158,19 +158,19 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
 
 
   # ROLLING BACKCASTING WINDOWS
-  if (runName == "backcast" && times$start < 2020) {
+  if (runNameMPB == "backcast" && times$start < 2020) {
     paramsFit$mpbRedTopSpread$type <- "predict"
     paramsFit$mpbRedTopSpread$coresForPrediction <- 23
     message(crayon::green("Running Rolling Forecasting"))
     todo <- rbindlist(lapply(10:1, function(x) data.table(rollingWindow = x, sy = 2010:(2020-x))))
-    todo[, runName := paste0("RW", rollingWindow, "_", "X", sy)]
+    todo[, runNameMPB := paste0("RW", rollingWindow, "_", "X", sy)]
     # todo <- todo[25:55,]
     rasterOptions(maxmemory = 6e10)
     # showCache("cd35c61c23c7c92a") # first one with 10 year window
     # Require(unique(unlist(packages(paths = paths3$modulePath, modules = unlist(modules3)))))
-    MPBpredictRolling <- Map(runName = todo$runName, rollingWindow = todo$rollingWindow, sy = todo$sy,
+    MPBpredictRolling <- Map(runNameMPB = todo$runNameMPB, rollingWindow = todo$rollingWindow, sy = todo$sy,
                              #  mc.cores = 23, mc.preschedule = FALSE,
-                             function(runName, rollingWindow, sy) {
+                             function(runNameMPB, rollingWindow, sy) {
                                times <- list(start = sy, end = sy + rollingWindow)
                                syNam <- paste0("X", sy)
                                message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type, " on ", syNam))
@@ -193,7 +193,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
                                } else {
                                  options(opts)
                                  rm(climateSuitabilityMaps, windSpeedStack, windDirStack, pineDT, envir = envir(out))
-                                 saveSimList(out, filename = file.path(outputPath(out), paste0("mpbRollingSim_", runName, ".qs")))
+                                 saveSimList(out, filename = file.path(outputPath(out), paste0("mpbRollingSim_", runNameMPB, ".qs")))
                                }
                                return(out)
                              }
@@ -212,7 +212,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
   }
 
 
-  if (runName %in% "forecast") {
+  if (runNameMPB %in% "forecast") {
     ##################################################################
     # FORECASTING setup
     ##################################################################
