@@ -4,7 +4,7 @@ do.call(SpaDES.core::setPaths, paths3)
 data.table::setDTthreads(1)
 
 modules4 <- unique(c(unlist(modules3), c("Biomass_borealDataPrep", "Biomass_core", "Biomass_regeneration")))
-timesPredict <- list(start = 2015, end = 2030) ## 2017-2020
+timesPredict <- list(start = 2018, end = 2030) ## 2017-2020
 
 paramsPredict <- paramsFit
 paramsPredict[["mpbRedTopSpread"]] <-
@@ -17,8 +17,11 @@ objects3$studyAreaLarge <- objects3$studyArea
 paramsPredict <- modifyList2( # updates only those parameters specified, nested lists
   paramsPredict,
   list(.globals = list(.plots = "",
-                       stemsPerHaAvg = 1125),
-       Biomass_regeneration = list(fireInitialTime = timesPredict$start),
+                       stemsPerHaAvg = 1125,
+                       pineSpToUse = c("Pinu_con" , "Pinu_ban"),
+                       cohortDefinitionCols = c("pixelGroup", "speciesCode", "age", "B")
+  ),
+  Biomass_regeneration = list(fireInitialTime = timesPredict$start),
        Biomass_core = list(.useCache = "init"),
        Biomass_borealDataPrep = list(.useCache = c("init"),
                                      dataYear = 2011),
@@ -26,7 +29,7 @@ paramsPredict <- modifyList2( # updates only those parameters specified, nested 
        mpbPine = list(.useCache = ""),
        mpbRedTopSpread = append(as.list(apply(MPBfit$fit_mpbSpreadOptimizer$member$pop, 2, mean)),
                                 list(type = c("predict"),
-                                     coresForPrediction = 6,
+                                     coresForPrediction = 7,
                                      .useCache = ""))
   ))
 
