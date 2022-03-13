@@ -13,13 +13,13 @@ paramsPredict[["mpbRedTopSpread"]] <-
 species <- Cache(LandR::speciesInStudyArea, objects3$studyArea)
 objects3$sppNameVector <- grep("_Spp", species$speciesList, invert = TRUE, value = TRUE)
 objects3$studyAreaLarge <- objects3$studyArea
+objects3$columnsForPixelGroups = c("ecoregionGroup", "speciesCode", "age", "B")
 
 paramsPredict <- modifyList2( # updates only those parameters specified, nested lists
   paramsPredict,
   list(.globals = list(.plots = "",
                        stemsPerHaAvg = 1125,
-                       pineSpToUse = c("Pinu_con" , "Pinu_ban"),
-                       cohortDefinitionCols = c("pixelGroup", "speciesCode", "age", "B")
+                       pineSpToUse = c("Pinu_con" , "Pinu_ban")
   ),
   Biomass_regeneration = list(fireInitialTime = timesPredict$start),
        Biomass_core = list(.useCache = "init"),
