@@ -48,6 +48,7 @@ if (!exists(".studyAreaName", .GlobalEnv)) {
 #####
 
 prjDir <- switch(.user,
+                 # user1 = "/path/to/my/projects/LandR_MPB"
                  "~/GitHub/LandR_MPB")
 
 stopifnot(identical(normalizePath(prjDir), normalizePath(getwd())))
