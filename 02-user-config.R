@@ -1,6 +1,6 @@
 ## user + machine specific configs
 
-.fitUsing <- if (grepl("for-cast[.]ca", .nodename)) 4 else 0
+.fitUsing <- if (grepl("for-cast[.]ca", .nodename)) 1 else 0
 
 config.user <- switch(
   .user,
