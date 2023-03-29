@@ -107,13 +107,18 @@ if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
 }
 
 ## TODO: Require fails to install modulePkgs correctly - manually install these:
-install.packages(c(
-  "SpatialPack", "knitr", "details", "rmarkdown", "htmlwidgets", "htmlTable", "leaflet",
-  "widgetframe", "Hmisc", "leafem", "leafsync", "rms", "tmap", "spatialEco"
-), repos = "https://cloud.r-project.org")
+if (FALSE) {
+  install.packages(c(
+    "SpatialPack", "knitr", "details", "rmarkdown", "htmlwidgets", "htmlTable", "leaflet",
+    "widgetframe", "Hmisc", "leafem", "leafsync", "rms", "tmap", "spatialEco"
+  ), repos = "https://cloud.r-project.org")
 
+  install.packages(c(
+    "future", "dplyr", "disk.frame"
+  ), repos = "https://cloud.r-project.org")
+}
 modulePkgs <- unname(unlist(packagesInModules(modulePath = file.path(prjDir, "modules"))))
-modulePkgs <- unique(gsub("development", "dev-stable", modulePkgs))
+modulePkgs <- unique(gsub("development", "dev-stable", modulePkgs)) ## TODO: temporary version; update when working
 
 otherPkgs <- c("archive", "details", "DBI", "s-u/fastshp",
                "PredictiveEcology/fireSenseUtils@dev-stable",
