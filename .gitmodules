@@ -37,3 +37,6 @@
 [submodule "modules/gmcsDataPrep"]
 	path = modules/gmcsDataPrep
 	url = https://github.com/ianmseddy/gmcsDataPrep
+[submodule "modules/canClimateData"]
+	path = modules/canClimateData
+	url = https://github.com/PredictiveEcology/canClimateData
