@@ -80,11 +80,21 @@ library(Require)
 
 setLinuxBinaryRepo()
 
-Require(c(
-  #"PredictiveEcology/SpaDES.project@transition (>= 0.0.7.9018)", ## TODO: use development once merged
-  "PredictiveEcology/SpaDES.project@607f3fb1e32970c568a5e7a0ea3ca26a83237321",
-  "PredictiveEcology/SpaDES.config@development (>= 0.0.2.9068)"
-), upgrade = FALSE, standAlone = TRUE)
+## WARNING: Require doesn't respect upgrade = FALSE; reinstall affected packages manually if needed
+
+## TODO: restore this once Require fixed + upgraded
+# Require(c(
+#   "PredictiveEcology/SpaDES.project@transition (>= 0.0.7.9018)", ## TODO: use development once merged
+#   "PredictiveEcology/SpaDES.config@development (>= 0.0.2.9068)"
+# ), upgrade = FALSE, standAlone = TRUE)
+
+if (!"SpaDES.project" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
+  remotes::install_github("PredictiveEcology/SpaDES.project@607f3fb1e32970c568a5e7a0ea3ca26a83237321", upgrade = FALSE)
+}
+
+if (!"SpaDES.project" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
+  remotes::install_github("PredictiveEcology/SpaDES.config@development", upgrade = FALSE)
+}
 
 if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   ## https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
@@ -93,6 +103,12 @@ if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   install.packages("https://sourceforge.net/projects/biosimclient.mrnfforesttools.p/files/latest",
                    repos = NULL,  type = "source")
 }
+
+## TODO: Require fails to install modulePkgs correctly - manually install these:
+install.packages(c(
+  "SpatialPack", "knitr", "details", "rmarkdown", "htmlwidgets", "htmlTable", "leaflet",
+  "widgetframe", "Hmisc", "leafem", "leafsync", "rms", "tmap", "spatialEco"
+), repos = "https://cloud.r-project.org")
 
 modulePkgs <- unname(unlist(packagesInModules(modulePath = file.path(prjDir, "modules"))))
 modulePkgs <- unique(gsub("development", "dev-stable", modulePkgs))
