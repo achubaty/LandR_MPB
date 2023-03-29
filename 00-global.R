@@ -91,10 +91,12 @@ setLinuxBinaryRepo()
 if (!"SpaDES.project" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   remotes::install_github("PredictiveEcology/SpaDES.project@607f3fb1e32970c568a5e7a0ea3ca26a83237321", upgrade = FALSE)
 }
+require("SpaDES.project")
 
 if (!"SpaDES.project" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   remotes::install_github("PredictiveEcology/SpaDES.config@development", upgrade = FALSE)
 }
+require("SpaDES.config")
 
 if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   ## https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
