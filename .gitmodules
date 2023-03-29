@@ -22,3 +22,18 @@
 [submodule "modules/Biomass_borealDataPrep"]
 	path = modules/Biomass_borealDataPrep
 	url = git@github.com:PredictiveEcology/Biomass_borealDataPrep.git
+[submodule "modules/Biomass_speciesData"]
+	path = modules/Biomass_speciesData
+	url = https://github.com/PredictiveEcology/Biomass_speciesData
+[submodule "modules/Biomass_speciesFactorial"]
+	path = modules/Biomass_speciesFactorial
+	url = https://github.com/PredictiveEcology/Biomass_speciesFactorial
+[submodule "modules/Biomass_speciesParameters"]
+	path = modules/Biomass_speciesParameters
+	url = https://github.com/PredictiveEcology/Biomass_speciesParameters
+[submodule "modules/Biomass_summary"]
+	path = modules/Biomass_summary
+	url = https://github.com/PredictiveEcology/Biomass_summary
+[submodule "modules/gmcsDataPrep"]
+	path = modules/gmcsDataPrep
+	url = https://github.com/ianmseddy/gmcsDataPrep
