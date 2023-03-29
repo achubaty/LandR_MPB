@@ -14,7 +14,7 @@ if (exists(".mode", .GlobalEnv)) {
   .mode <- c("development")
 
   if (.user %in% c("achubaty") && grepl("for-cast[.]ca", .nodename)) {
-   #.mode <- append(.mode, "fit")
+    .mode <- append(.mode, "fit")
   }
 }
 
