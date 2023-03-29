@@ -81,11 +81,12 @@ library(Require)
 setLinuxBinaryRepo()
 
 Require(c(
-  "PredictiveEcology/SpaDES.project@transition (>= 0.0.7.9018)", ## TODO: use development once merged
+  #"PredictiveEcology/SpaDES.project@transition (>= 0.0.7.9018)", ## TODO: use development once merged
+  "PredictiveEcology/SpaDES.project@607f3fb1e32970c568a5e7a0ea3ca26a83237321",
   "PredictiveEcology/SpaDES.config@development (>= 0.0.2.9068)"
 ), upgrade = FALSE, standAlone = TRUE)
 
-if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1])) {
+if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   ## https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
   install.packages("https://sourceforge.net/projects/repiceasource/files/latest",
                    repos = NULL,  type = "source")
