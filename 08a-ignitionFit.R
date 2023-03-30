@@ -16,13 +16,7 @@ ignitionFitParams <- list(
   fireSense_IgnitionFit = config$params[["fireSense_IgnitionFit"]]
 )
 
-if (grepl("ROF", config$context[["studyAreaName"]])) {
-  ## NOTE: drop youngAge and class2 (rare on landscape and driving crazy ignitions)
-  form <- paste("ignitions ~ FenPlus:MDC + BogSwamp:MDC + class3:MDC +",
-                "FenPlus:pw(MDC, k_FnP) + BogSwamp:pw(MDC, k_BgS) + class3:pw(MDC, k_cl3) - 1")
-} else {
-  form <- fSsimDataPrep[["fireSense_ignitionFormula"]]
-}
+form <- fSsimDataPrep[["fireSense_ignitionFormula"]]
 
 ignitionFitParams[["fireSense_IgnitionFit"]][["fireSense_ignitionFormula"]] <- form
 
@@ -63,8 +57,7 @@ if (isTRUE(config$args[["usePrerun"]]) & isFALSE(upload_ignitionOut)) {
   if (isUpdated(ignitionOut)) {
     ignitionOut@.xData[["._sessionInfo"]] <- projectSessionInfo(prjDir)
     saveSimList(sim = ignitionOut, filename = fignitionOut,
-                fileBackend = ifelse(isTRUE(config$args[["reupload"]]), 2, 0)
-                )
+                fileBackend = ifelse(isTRUE(config$args[["reupload"]]), 2, 0))
   }
 
   if (isTRUE(upload_ignitionOut)) {
