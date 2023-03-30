@@ -7,10 +7,14 @@ Evaluate short-run potential for MPB establishment, eruption, and spread in Cana
 **Authors:**
 
 - Alex M. Chubaty (<achubaty@for-cast.ca>)
-- Barry Cooke (<barry.cooke@canada.ca>)
-- Eliot McIntire (<eliot.mcintire@canada.ca>)
+- Barry Cooke (<barry.cooke@nrcan-rncan.gc.ca>)
+- Eliot McIntire (<eliot.mcintire@nrcan-rncan.gc.ca>)
 
-**Date:** June 30, 2021
+**Copyright:**
+
+His Majesty the King in Right of Canada, as represented by the Minister of Natural Resources, 2023.
+
+**Date:** March 29, 2023
 
 ### Default Study Area
 
@@ -18,13 +22,41 @@ Evaluate short-run potential for MPB establishment, eruption, and spread in Cana
 
 ### Modules
 
+#### Study area and data prep
+
+- [canClimateData](https://github.com/PredictiveEcology/canClimateData)
 - [LandR_MPB_studyArea](https://github.com/achubaty/LandR_MPB_studyArea)
+
+#### MPB population dynamics and spread
+
 - [mpbClimateData](https://github.com/achubaty/mpbClimateData)
 - [mpbMassAttacksData](https://github.com/achubaty/mpbMassAttacksData)
 - [mpbPine](https://github.com/achubaty/mpbPine)
 - [mpbRedTopSpread](https://github.com/achubaty/mpbRedTopSpread)
 
-Future linkages include the `LandR` Biomass suite of modules to simulate/forecast forest vegetation dynamics, and the `fireSense` wildfire simulation model.
+#### LandR vegetation dynamics
+
+- [Biomass_borealDataPrep](https://github.com/PredictiveEcology/Biomass_borealDataPrep)
+- [Biomass_core](https://github.com/PredictiveEcology/Biomass_core)
+- [Biomass_regeneration](https://github.com/PredictiveEcology/Biomass_regeneration)
+- [Biomass_speciesData](https://github.com/PredictiveEcology/Biomass_speciesData)
+- [Biomass_speciesFactorial](https://github.com/PredictiveEcology/Biomass_speciesFactorial)
+- [Biomass_speciesParameters](https://github.com/PredictiveEcology/Biomass_speciesParameters)
+- [Biomass_summary](https://github.com/PredictiveEcology/Biomass_summary)
+- [gmcsDataPrep](https://github.com/ianmseddy/gmcsDataPrep)
+
+#### fireSense wildfire simulation
+
+- [fireSense](https://github.com/PredictiveEcology/fireSense)
+- [fireSense_dataPrepFit](https://github.com/PredictiveEcology/fireSense_dataPrepFit)
+- [fireSense_dataPrepPredict](https://github.com/PredictiveEcology/fireSense_dataPrepPredict)
+- [fireSense_EscapeFit](https://github.com/PredictiveEcology/fireSense_EscapeFit)
+- [fireSense_EscapePredict](https://github.com/PredictiveEcology/fireSense_EscapePredict)
+- [fireSense_IgnitionFit](https://github.com/PredictiveEcology/fireSense_IgnitionFit)
+- [fireSense_IgnitionPredict](https://github.com/PredictiveEcology/fireSense_IgnitionPredict)
+- [fireSense_SpreadFit](https://github.com/PredictiveEcology/fireSense_SpreadFit)
+- [fireSense_SpreadPredict](https://github.com/PredictiveEcology/fireSense_SpreadPredict)
+- [fireSense_summary](https://github.com/PredictiveEcology/fireSense_summary)
 
 ### Getting the code
 

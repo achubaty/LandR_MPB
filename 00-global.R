@@ -43,7 +43,8 @@ if (exists(".res", .GlobalEnv)) {
 }
 
 if (!exists(".studyAreaName", .GlobalEnv)) {
-  .studyAreaName <- "ABSK_MPB_9.2" ## ecoprovs in ABSK_MPB 9.1, 9.2
+  ## ecoprovs in ABSK corresponding to ecoregions in preamble: 9.1, 9.2
+  .studyAreaName <- "ABSK_9.2" ## TODO: avoid needing to specify both ecoregions and ecoprovs
 }
 #####
 
@@ -200,12 +201,6 @@ if (config$args[["delayStart"]] > 0) {
   message(crayon::green("\nStaggered job start: delaying by", config$args[["delayStart"]], "minutes."))
   Sys.sleep(config$args[["delayStart"]]*60)
 }
-
-## PREVIOUSLY USING:
-# source("06-studyArea.R")
-# #source("07-dataPrep.R") ## skip for now
-# source("08-MPB-spread-fit.R")
-# source("09-main-sim.R")
 
 if (!"postprocess" %in% config$context[["mode"]]) {
   if ("fit" %in% config$context[["mode"]]) {

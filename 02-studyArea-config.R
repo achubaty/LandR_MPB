@@ -18,6 +18,9 @@ config.studyArea <- list(
       subsetDataAgeModel = 50,
       subsetDataBiomassModel = 50
     ),
+    canClimateData = list(
+      studyAreaName = c("AB", "SK")
+    ),
     LandR_MPB_studyArea = list(
       studyAreaName = config$context[["studyAreaName"]],
       .useCache = FALSE #".inputObjects"

@@ -67,31 +67,7 @@ config.user <- switch(
     )
   ),
 
-  ## Ian ------------------------------------------------------------------------------------------
-  ieddy = list(
-    args = list(
-      cloud = list(
-        googleUser = "ianmseddy@gmail.com",
-        useCloud = FALSE
-      ),
-      spades.memoryUse = FALSE,
-      notifications = list(
-        slackChannel = ""
-      ),
-      usePrerun = TRUE,
-      upload_preamble = FALSE
-    ),
-    options = list(
-      reproducible.cacheSaveFormat = "qs",
-      spades.memoryUseInterval = FALSE
-    ),
-    params = list(
-      .plotInitialTime = NA
-    ),
-    paths = list(
-      scratchPath = file.path("/mnt/scratch", .user, basename(prjDir))
-    )
-  ),
+  ## TODO: eliot config
 
   ## docker (user rstudio) -------------------------------------------------------------------------
   rstudio = list(
