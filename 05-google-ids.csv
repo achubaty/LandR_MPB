@@ -1,7 +1,9 @@
 studyArea,simObject,gcm,ssp,runID,gid
 ABSK_9.1,simOutPreamble,CanESM5,370,,1O2aIsB9s_tIeEeJFwH0ZcuoN-kA_cj7T
 ABSK_9.1,simOutPreamble,CanESM5,585,,1Ky-aSwyg3DqlkZqQOw8Eic9_5c9oY-hR
+ABSK_9.2,simOutPreamble,CanESM5,370,,1c4cq9pfIRHqX7U2lq75ImojXZHH7JP3f
 ABSK_9.2,simOutPreamble,CanESM5,585,,1TRIteA4DwoHXn3QJ49BziaHZj4xlmee-
+ABSK_9.2,biomassMaps2001,,,,1XVQFmy3xEKMtvvUKKWMr5MT8nMHUt31c
 ABSK_MPB_9.1,simOutPreamble,CanESM5,370,,""
 ABSK_MPB_9.1,simOutPreamble,CanESM5,585,,""
 ABSK_MPB_9.1,biomassMaps2001,"",,,""

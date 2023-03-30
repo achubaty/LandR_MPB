@@ -9,6 +9,7 @@ year <- 2011
 config$params <- list(
   .globals = list(
     dataYear = year,
+    sppEquivCol = "LandR",
     .plotInitialTime = year,
     .studyAreaName = paste0(config$context[["studyAreaName"]], "_", year)
   ),
@@ -38,6 +39,7 @@ dataPrepParams2011 <- list(mpbPine = config$params[["mpbPine"]]) ## TODO: confir
 
 ## begin param updates
 dataPrepParams2011[[".globals"]][["dataYear"]] <- year
+dataPrepParams2011[[".globals"]][["sppEquivCol"]] <- "LandR"
 dataPrepParams2011[[".globals"]][[".plotInitialTime"]] <- year
 dataPrepParams2011[[".globals"]][[".studyAreaName"]] <- paste0(config$context[["studyAreaName"]], "_", year)
 

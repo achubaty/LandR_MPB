@@ -22,8 +22,18 @@ config.studyArea <- list(
       .runInitialTime = max(historicFireYears) + 1 ## fireSense simulates fires for years w/o data; TODO: add to config
     ),
     Biomass_borealDataPrep = list(
+      sppEquivCol = "LandR",
       subsetDataAgeModel = 50,
       subsetDataBiomassModel = 50
+    ),
+    Biomass_speciesData = list(
+      sppEquivCol = "LandR"
+    ),
+    Biomass_speciesFactorial = list(
+      sppEquivCol = "LandR"
+    ),
+    Biomass_speciesParameters = list(
+      sppEquivCol = "LandR"
     ),
     canClimateData = list(
       studyAreaName = c("AB", "SK")
