@@ -1,10 +1,13 @@
+source("05-google-ids.R")
+
+gid_mpbfit <- gdriveSims[studyArea == config$context[["studyAreaName"]] & simObject == "mpbSpreadFit", gid]
+upload_mpbfit <- config$args[["reupload"]] | length(gid_mpbfit) == 0
+
 ## pre-simulation preparation
+runNameMPB <- if ("fit" %in% config$context[["mode"]]) "fit" else "forecast" ## TODO: allow run standalone; allow backcast etc.
 
-do.call(SpaDES.core::setPaths, paths3)
-
-runNameMPB <- if (Require:::isWindows() || amc::isRstudio()) "fit" else "backcast" # "predict" "validate" "runOnce"#  "optim" "nofit" "fit"
-climateMapRandomize = NULL
-times <- list(start = 2010, end = 2020) ## 2010-2016
+climateMapRandomize <- NULL
+mpbFitTimes <- list(start = 2010, end = 2020)
 
 if (runNameMPB %in% c("fit", "runOnce")) {
   type <- "DEoptim"
@@ -13,107 +16,74 @@ if (runNameMPB %in% c("validate", "parameter")) {
   type <- "validate"
 }
 if (runNameMPB %in% "backcast") {
-  times <- list(start = 2010, end = 2020) ## 2010-2016
+  mpbFitTimes <- list(start = 2010, end = 2020)
   type <- "predict"
 }
 if (runNameMPB %in% "runOnce") {
   type <- "runOnce"
 }
 if (runNameMPB %in% "forecast") {
-  times <- list(start = 2020, end = 2030) ## 2010-2016
+  mpbFitTimes <- list(start = 2020, end = 2030)
   type <- "predict"
   climateMapRandomize = TRUE
 }
 
-
-paramsFit <- list(
-  .globals = list(.plots = ""),
-  mpbClimateData = list(
-    suitabilityIndex = "R",    ## Can be "G", "S", "L", "R"
-    .maxMemory = maxMemory,
-    .useCache = "init"
-    # .plots = ""
-    # .plotInitialTime = NA#,
-    #.tempdir = scratchDir
-  ),
-  mpbMassAttacksData = list(
-    .maxMemory = maxMemory,
-    .useCache = eventCaching,
-    .plotInitialTime = NA#,
-    #.tempdir = scratchDir
-  ),
-  mpbPine = list(
-    lowMemory = lowMemory,
-    .maxMemory = maxMemory,
-    .useCache = eventCaching,
-    .plotInitialTime = NA#,
-    #.tempdir = scratchDir
-  ),
-  mpbRedTopSpread = list(
-    # p_advectionDir = 90, # not used anymore
-    p_advectionMag = 1000,
-    p_meanDist = 1000,
-    maxDistance = 1e5,
-    dispersalKernel = "Weibull3",# "Generalized Gamma", # Weibull3
-    # .plots = "screen",
-    type = type
-  )
+mpbFitParams <- list(
+  mpbClimateData = config$params[["mpbClimateData"]],
+  mpbMassAttacksData = config$params[["mpbMassAttacksData"]],
+  ## mpbPine was run with Biomass_borealDataPrep etc. earlier
+  mpbRedTopSpread = config$params[["mpbRedTopSpread"]]
 )
 
-
-objects3 <- list(
-  studyArea = simOutPreamble$studyArea,
-  studyAreaFit = simOutPreamble$studyAreaFit, ## TODO: pass this explicitly as studyArea
-  absk = simOutPreamble$absk,
+mpbFitObjects <- list(
+  studyArea = simOutPreamble[["studyArea"]],
+  studyAreaFit = simOutPreamble[["studyAreaFit"]], ## TODO: pass this explicitly as studyArea
+  absk = simOutPreamble[["absk"]],
   climateMapRandomize = climateMapRandomize
 )
 
-modules3 <- list(
-  "mpbClimateData", "mpbPine",
+mpbFitModules <- list(
+  "mpbClimateData",
   "mpbMassAttacksData",
-  "mpbRedTopSpread"#,
-  #"mpbManagement"
+  "mpbRedTopSpread"
 )
-
-
 
 if (type %in% c("DEoptim", "optim", "runOnce")) {
   message(crayon::green("RUNNING ", type))
   MPBfit <- Cache(
     simInitAndSpades,
-    times = times,
-    params = paramsFit,
+    times = mpbFitTimes,
+    params = mpbFitParams,
     modules = modules3,
     objects = objects3,
     loadOrder = unlist(modules3),
     .cacheExtra = moduleCodeFiles(paths3, modules3),
     #useCloud = TRUE,
-    userTags = c("MPB 08 Fit")
+    userTags = c("mpbSpreadFit")
     #cloudFolderID = cloudCacheFolderID # Eliot's Gdrive: Hosted/BioSIM/ folder
     # events = "init"
     # useCache = "overwrite"
   )
 } else {
-
   #########################################################################################
-  # For Forecasting -- use a specific fit_mpbSpreadOptimizer object
+  ## for forecasting -- use a specific fit_mpbSpreadOptimizer object
   DEoutFileList <- dir(dirname(paths3$outputPath), pattern = "DEout", full.names = TRUE)
-  fit_mpbSpreadOptimizer <- readRDS(DEoutFileList[[24]]) # 24 is currently best of my files (Eliot)
+  fit_mpbSpreadOptimizer <- readRDS(DEoutFileList[[24]]) ## TODO: don't have '24' -- Eliot's best
   objects3 <- append(objects3,
                      list(fit_mpbSpreadOptimizer = fit_mpbSpreadOptimizer))
-  paramsFit$mpbRedTopSpread$dispersalKernel <- "Weibull3"
+  mpbFitParams$mpbRedTopSpread$dispersalKernel <- "Weibull3"
   outputs <- setDF(rbindlist(list(
-    data.frame(objectName = "fit_mpbSpreadOptimizer", saveTime = times$end),
-    data.table("ROCList", saveTime = times$end)
+    data.frame(objectName = "fit_mpbSpreadOptimizer", saveTime = mpbFitTimes$end),
+    data.table("ROCList", saveTime = mpbFitTimes$end)
   ), use.names = FALSE))
-  # paramsFit$mpbRedTopSpread$type <- "validate"
+  # mpbFitParams$mpbRedTopSpread$type <- "validate"
 
   if (runNameMPB == "validate") {
-    message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type))
+    message(crayon::green("RUNNING ", mpbFitParams$mpbRedTopSpread$type))
     MPBpredict <- Cache(
       simInitAndSpades,
-      times = times,
-      params = paramsFit,
+      times = mpbFitTimes,
+      params = mpbFitParams,
       modules = modules3,
       objects = objects3,
       outputs = outputs,
@@ -134,14 +104,14 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
     # browser()
     outParams <- lapply(X = todo$tpps, # sleep = sleeps,
                         # mc.cores = pmin(4, length(sleeps)),
-                        paramsFit = paramsFit,
-                        function(X, paramsFit) {#}, sleep) {
+                        mpbFitParams = mpbFitParams,
+                        function(X, mpbFitParams) {#}, sleep) {
                           # Sys.sleep(sleep)
-                          paramsFit$mpbRedTopSpread$thresholdPineProportion <- X
+                          mpbFitParams$mpbRedTopSpread$thresholdPineProportion <- X
                           MPBpredict <- Cache(
                             simInitAndSpades,
-                            times = times,
-                            params = paramsFit,
+                            times = mpbFitTimes,
+                            params = mpbFitParams,
                             modules = modules3,
                             objects = objects3,
                             outputs = outputs,
@@ -158,29 +128,26 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
 
 
   # ROLLING BACKCASTING WINDOWS
-  if (runNameMPB == "backcast" && times$start < 2020) {
-    paramsFit$mpbRedTopSpread$type <- "predict"
-    paramsFit$mpbRedTopSpread$coresForPrediction <- 23
+  if (runNameMPB == "backcast" && mpbFitTimes$start < 2020) {
+    mpbFitParams$mpbRedTopSpread$type <- "predict"
+    mpbFitParams$mpbRedTopSpread$coresForPrediction <- 23
     message(crayon::green("Running Rolling Forecasting"))
-    todo <- rbindlist(lapply(10:1, function(x) data.table(rollingWindow = x, sy = 2010:(2020-x))))
+    todo <- rbindlist(lapply(10:1, function(x) data.table(rollingWindow = x, sy = 2010:(2020 - x))))
     todo[, runNameMPB := paste0("RW", rollingWindow, "_", "X", sy)]
-    # todo <- todo[25:55,]
     rasterOptions(maxmemory = 6e10)
-    # showCache("cd35c61c23c7c92a") # first one with 10 year window
-    # Require(unique(unlist(packages(paths = paths3$modulePath, modules = unlist(modules3)))))
     MPBpredictRolling <- Map(runNameMPB = todo$runNameMPB, rollingWindow = todo$rollingWindow, sy = todo$sy,
                              #  mc.cores = 23, mc.preschedule = FALSE,
                              function(runNameMPB, rollingWindow, sy) {
                                times <- list(start = sy, end = sy + rollingWindow)
                                syNam <- paste0("X", sy)
-                               message(crayon::green("RUNNING ", paramsFit$mpbRedTopSpread$type, " on ", syNam))
+                               message(crayon::green("RUNNING ", mpbFitParams$mpbRedTopSpread$type, " on ", syNam))
                                opts <- options(spades.recoveryMode = FALSE)
                                rasterOptions(maxmemory = 6e10)
                                on.exit(try(options(opts), silent = TRUE))
                                simInitForRolling <- try(
                                  Cache(simInit,
                                        times = times,
-                                       params = paramsFit,
+                                       params = mpbFitParams,
                                        modules = modules3,
                                        objects = objects3,
                                        outputs = outputs,
@@ -207,7 +174,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
         xlab("Forecast horizon; years into the future") +
         ylab("AUC (Area under the Receiver Operating Curve)")
     }
-    Plots(fn = forecastHorizonFn, todo = todo, type = paramsFit$.globals$.plots,
+    Plots(fn = forecastHorizonFn, todo = todo, type = mpbFitParams$.globals$.plots,
           filename = file.path(paths3$outputPath, "figures", paste0("Forecast Horizon")))
   }
 
@@ -217,14 +184,14 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
     # FORECASTING setup
     ##################################################################
 
-    paramsFit$mpbRedTopSpread$type <- "predict"
-    paramsFit$mpbClimateData$.useCache <- ".inputObjects"
-    paramsFit$mpbRedTopSpread$coresForPrediction <- 10
+    mpbFitParams$mpbRedTopSpread$type <- "predict"
+    mpbFitParams$mpbClimateData$.useCache <- ".inputObjects"
+    mpbFitParams$mpbRedTopSpread$coresForPrediction <- 10
     message(crayon::green("Forecasting with climate variation"))
 
     out <- simInit(##AndExperiment2,
-      times = times,
-      params = paramsFit,
+      times = mpbFitTimes,
+      params = mpbFitParams,
       modules = modules3,
       objects = objects3,
       outputs = outputs,
@@ -315,7 +282,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
         ylab("Forecasted Mean Attack Density (per km2 of attacked pixels)")
     }
 
-    Plots(dt = out4, fn = plot_smoothPoint, type = paramsFit$.globals$.plots,
+    Plots(dt = out4, fn = plot_smoothPoint, type = mpbFitParams$.globals$.plots,
           filename = file.path(paths3$outputPath, "figures", paste0("Forecast Abundance")))
 
 
@@ -396,29 +363,20 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
         label = "Net displacement (km/5 y)",
         columns = grep(value = TRUE, "^.+/.+", colnames(dispT3))
       )
-    startToEnd <- paste0(times$start, " to ", times$end, "_", Sys.time())
+    startToEnd <- paste0(mpbFitTimes$start, " to ", mpbFitTimes$end, "_", Sys.time())
 
     gtsave(tabWithCI,
            filename = file.path(outputPath(sim), "figures",
                                 paste0("forecast: displacementTable ", startToEnd, ".png")))
 
-
-
-
-
-
-
-
-
     # UPLOAD FILES
-    if (FALSE) {
+    if (isTRUE(upload_mpbfit)) {
       Require::Require("googledrive")
       local_files <- dir(file.path(paths3$outputPath, "figures"), full.names = TRUE)
       local_files <- dir(file.path(paths3$outputPath, "figures"), pattern =  "forecast:.+displacementTable.+2020.+2030.+06-30", full.names = TRUE)
 
-      driveFolder <- as_id("1L2lNlsNa6DFaC9fUFwz6MyZw3mKSWQzd")
+      driveFolder <- gid_mpbfit ## TODO: was `as_id("1L2lNlsNa6DFaC9fUFwz6MyZw3mKSWQzd")` for standalone MPB
       files <- lapply(local_files, function(fn) drive_upload(fn, path = driveFolder, overwrite = TRUE))
     }
   }
 }
-
