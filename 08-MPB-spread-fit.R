@@ -28,6 +28,8 @@ if (runNameMPB %in% "forecast") {
   climateMapRandomize = TRUE
 }
 
+config$params[["mpbClimateData"]][[".plots"]] <- NA ## TODO: Plots() failing with rasters in this module
+
 mpbFitParams <- list(
   mpbClimateData = config$params[["mpbClimateData"]],
   mpbMassAttacksData = config$params[["mpbMassAttacksData"]],
@@ -36,8 +38,9 @@ mpbFitParams <- list(
 )
 
 mpbFitObjects <- list(
+  standAgeMap = simOutPreamble[["standAgeMap"]],
   studyArea = simOutPreamble[["studyArea"]],
-  studyAreaFit = simOutPreamble[["studyAreaFit"]], ## TODO: pass this explicitly as studyArea
+  studyAreaFit = simOutPreamble[["studyArea"]], ## TODO: studyAreaFit not made in preamble !
   absk = simOutPreamble[["absk"]],
   climateMapRandomize = climateMapRandomize
 )
@@ -49,15 +52,15 @@ mpbFitModules <- list(
 )
 
 if (type %in% c("DEoptim", "optim", "runOnce")) {
-  message(crayon::green("RUNNING ", type))
+  message(crayon::green("RUNNING ", type)) ## TODO: j4r fails to start
   MPBfit <- Cache(
     simInitAndSpades,
     times = mpbFitTimes,
     params = mpbFitParams,
-    modules = modules3,
-    objects = objects3,
-    loadOrder = unlist(modules3),
-    .cacheExtra = moduleCodeFiles(paths3, modules3),
+    modules = mpbFitModules,
+    objects = mpbFitObjects,
+    loadOrder = unlist(mpbFitModules),
+    .cacheExtra = moduleCodeFiles(config$paths, mpbFitModules),
     #useCloud = TRUE,
     userTags = c("mpbSpreadFit")
     #cloudFolderID = cloudCacheFolderID # Eliot's Gdrive: Hosted/BioSIM/ folder
@@ -67,7 +70,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
 } else {
   #########################################################################################
   ## for forecasting -- use a specific fit_mpbSpreadOptimizer object
-  DEoutFileList <- dir(dirname(paths3$outputPath), pattern = "DEout", full.names = TRUE)
+  DEoutFileList <- dir(dirname(config$paths[["outputPath"]]), pattern = "DEout", full.names = TRUE)
   fit_mpbSpreadOptimizer <- readRDS(DEoutFileList[[24]]) ## TODO: don't have '24' -- Eliot's best
   objects3 <- append(objects3,
                      list(fit_mpbSpreadOptimizer = fit_mpbSpreadOptimizer))
@@ -88,7 +91,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
       objects = objects3,
       outputs = outputs,
       loadOrder = unlist(modules3),
-      .cacheExtra = moduleCodeFiles(paths3, modules3)
+      .cacheExtra = moduleCodeFiles(paths, modules3)
       # events = "init"
       # useCache = "overwrite"
     )
@@ -116,7 +119,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
                             objects = objects3,
                             outputs = outputs,
                             loadOrder = unlist(modules3),
-                            .cacheExtra = moduleCodeFiles(paths3, modules3)
+                            .cacheExtra = moduleCodeFiles(paths, modules3)
                             # events = "init"
                             # useCache = "overwrite"
                           )
@@ -152,7 +155,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
                                        objects = objects3,
                                        outputs = outputs,
                                        loadOrder = unlist(modules3)#,
-                                       # .cacheExtra = moduleCodeFiles(paths3, modules3)
+                                       # .cacheExtra = moduleCodeFiles(paths, modules3)
                                  ))
                                out <- try(Cache(spades, simInitForRolling))
                                if (is(out, "try-error")) {
@@ -175,7 +178,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
         ylab("AUC (Area under the Receiver Operating Curve)")
     }
     Plots(fn = forecastHorizonFn, todo = todo, type = mpbFitParams$.globals$.plots,
-          filename = file.path(paths3$outputPath, "figures", paste0("Forecast Horizon")))
+          filename = file.path(config$paths[["outputPath"]], "figures", paste0("Forecast Horizon")))
   }
 
 
@@ -197,7 +200,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
       outputs = outputs,
       #  replicates = 6,
       loadOrder = unlist(modules3)#,
-      # .cacheExtra = moduleCodeFiles(paths3, modules3)
+      # .cacheExtra = moduleCodeFiles(paths, modules3)
       # events = "init"
       # useCache = "overwrite"
     )
@@ -220,7 +223,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
 
 
     lapply(seq_along(out2), function(ind)
-      saveSimList(out2[[ind]], file.path(paths3$outputPath, paste0("Replicate Forecast Sims_",
+      saveSimList(out2[[ind]], file.path(config$paths[["outputPath"]], paste0("Replicate Forecast Sims_",
                                                                    paddedFloatToChar(ind, 3), ".qs"))))
 
     # Read them back in
@@ -256,7 +259,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
     tpred <- tpred + tm_layout(title = "Forecasted probability of mass attack by 2030")
     tpred
 
-    fn1 <- file.path(paths3$out, "figures", paste0("Forecasted risk maps to 2030.png"))
+    fn1 <- file.path(config$paths[["outputPath"]], "figures", paste0("Forecasted risk maps to 2030.png"))
     suppressWarnings(
       Cache(tmap_save, tpred, filename = fn1,
             width = 8, height = 5, units = "in", dpi = 300, omitArgs = "filename")
@@ -283,7 +286,7 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
     }
 
     Plots(dt = out4, fn = plot_smoothPoint, type = mpbFitParams$.globals$.plots,
-          filename = file.path(paths3$outputPath, "figures", paste0("Forecast Abundance")))
+          filename = file.path(config$paths[["outputPath"]], "figures", paste0("Forecast Abundance")))
 
 
     ########## DISPLACEMENT TABLES
@@ -372,8 +375,8 @@ if (type %in% c("DEoptim", "optim", "runOnce")) {
     # UPLOAD FILES
     if (isTRUE(upload_mpbfit)) {
       Require::Require("googledrive")
-      local_files <- dir(file.path(paths3$outputPath, "figures"), full.names = TRUE)
-      local_files <- dir(file.path(paths3$outputPath, "figures"), pattern =  "forecast:.+displacementTable.+2020.+2030.+06-30", full.names = TRUE)
+      local_files <- dir(file.path(config$paths[["outputPath"]], "figures"), full.names = TRUE)
+      local_files <- dir(file.path(config$paths[["outputPath"]], "figures"), pattern =  "forecast:.+displacementTable.+2020.+2030.+06-30", full.names = TRUE)
 
       driveFolder <- gid_mpbfit ## TODO: was `as_id("1L2lNlsNa6DFaC9fUFwz6MyZw3mKSWQzd")` for standalone MPB
       files <- lapply(local_files, function(fn) drive_upload(fn, path = driveFolder, overwrite = TRUE))
