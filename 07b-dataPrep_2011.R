@@ -23,6 +23,7 @@ config$params <- list(
   Biomass_borealDataPrep = list(
     dataYear = year,
     .plotInitialTime = year,
+    .plots = NA, ## TODO: don't plot b/c writing rasters fails - no slot 'file' in stack
     .studyAreaName = paste0(config$context[["studyAreaName"]], "_", year)
   ),
   Biomass_speciesParameters = list(
@@ -30,7 +31,10 @@ config$params <- list(
   )
 )
 
+dataPrepModules2011 <- c(dataPrepModules2001, "mpbPine") ## TODO: confirm run here
+
 dataPrepParams2011 <- dataPrepParams2001
+dataPrepParams2011 <- list(mpbPine = config$params[["mpbPine"]]) ## TODO: confirm run here
 
 ## begin param updates
 dataPrepParams2011[[".globals"]][["dataYear"]] <- year
@@ -46,6 +50,7 @@ dataPrepParams2011[["Biomass_speciesFactorial"]][[".plotInitialTime"]] <- year
 
 dataPrepParams2011[["Biomass_borealDataPrep"]][["dataYear"]] <- year
 dataPrepParams2011[["Biomass_borealDataPrep"]][[".plotInitialTime"]] <- year
+dataPrepParams2011[["Biomass_borealDataPrep"]][[".plots"]] <- NA  ## TODO: don't plot b/c writing rasters fails - no slot 'file' in stack
 dataPrepParams2011[["Biomass_borealDataPrep"]][[".studyAreaName"]] <- paste0(config$context[["studyAreaName"]], "_", year)
 
 dataPrepParams2011[["Biomass_speciesParameters"]][[".plotInitialTime"]] <- year
@@ -83,9 +88,9 @@ if (isTRUE(config$args[["usePrerun"]]) & isFALSE(upload_biomassMaps2011)) {
     simInitAndSpades,
     times = list(start = year, end = year),
     params = dataPrepParams2011,
-    modules = dataPrepModules,
+    modules = dataPrepModules2011,
     objects = dataPrepObjects,
-    loadOrder = unlist(dataPrepModules),
+    loadOrder = unlist(dataPrepModules2011),
     #outputs = dataPrepOutputs2011,
     useCloud = FALSE, #config$args[["cloud"]][["useCloud"]],
     cloudFolderID = NULL,#config$args[["cloud"]][["cacheDir"]],

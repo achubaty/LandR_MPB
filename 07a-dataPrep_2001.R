@@ -5,7 +5,7 @@ upload_biomassMaps2001 <- config$args[["reupload"]] | length(gid_biomassMaps2001
 
 year <- 2001
 
-dataPrepModules <- list(
+dataPrepModules2001 <- list(
   "Biomass_speciesData",
   "Biomass_speciesFactorial",
   "Biomass_borealDataPrep",
@@ -88,9 +88,9 @@ if (isTRUE(config$args[["usePrerun"]]) & isFALSE(upload_biomassMaps2001)) {
     simInitAndSpades,
     times = list(start = year, end = year),
     params = dataPrepParams2001,
-    modules = dataPrepModules,
+    modules = dataPrepModules2001,
     objects = dataPrepObjects,
-    loadOrder = unlist(dataPrepModules),
+    loadOrder = unlist(dataPrepModules2001),
     # outputs = dataPrepOutputs2001,
     .plots = NA,
     useCloud = FALSE, #config$args[["cloud"]][["useCloud"]],

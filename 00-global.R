@@ -217,9 +217,10 @@ if (!"postprocess" %in% config$context[["mode"]]) {
   if ("fit" %in% config$context[["mode"]]) {
     opt <- options(spades.memoryUseInterval = FALSE) ## TODO: periodically stalls during mem use setup; disable temporarily
   }
-  source("07b-dataPrep_2011.R")
+  source("07b-dataPrep_2011.R") ## run mpbPine here
   source("07c-dataPrep_fS.R")
 
+  source("08-MPB-spread-fit.R")
   source("08a-ignitionFit.R")
   source("08b-escapeFit.R")
 

@@ -2,7 +2,7 @@
 
 gdriveSims <- data.table::fread("05-google-ids.csv")
 
-lvls <- c("simOutPreamble", "biomassMaps2001", "biomassMaps2011", "fSsimDataPrep",
+lvls <- c("simOutPreamble", "biomassMaps2001", "biomassMaps2011", "fSsimDataPrep", "mpbSpreadFit",
           "ignitionOut", "escapeOut", "spreadOut", "results")
 data.table::set(gdriveSims, NULL, "simObject", factor(gdriveSims$simObject, levels = lvls))
 data.table::setkeyv(gdriveSims, c("studyArea", "simObject", "runID", "gcm", "ssp"))
