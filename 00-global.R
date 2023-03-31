@@ -101,10 +101,12 @@ require("SpaDES.config")
 
 if (!"BioSIM" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   ## https://sourceforge.net/p/mrnfforesttools/biosimclient/wiki/BioSIM-R/#requirements
-  install.packages("https://sourceforge.net/projects/repiceasource/files/latest",
-                   repos = NULL,  type = "source")
-  install.packages("https://sourceforge.net/projects/biosimclient.mrnfforesttools.p/files/latest",
-                   repos = NULL,  type = "source")
+  # install.packages("https://sourceforge.net/projects/repiceasource/files/latest",
+  #                  repos = NULL,  type = "source")
+  # install.packages("https://sourceforge.net/projects/biosimclient.mrnfforesttools.p/files/latest",
+  #                  repos = NULL,  type = "source")
+  remotes::install_github("CWFC-CCFB/J4R@v1.1.8") ## v1.1.9 broken on ubuntu
+  remotes::install_github("RNCan/BioSimClient_R")
 }
 
 ## TODO: Require fails to install modulePkgs correctly - manually install these:

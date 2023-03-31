@@ -27,6 +27,8 @@ outputs/
 outputs*/
 packages/
 MPB_AERIAL_SURVEY.gdb/
+J4RServer*.log
+J4RServer*.log.lck
 J4RTmpFile
 
 ## OAuth tokens

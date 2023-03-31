@@ -28,14 +28,15 @@ if (runNameMPB %in% "forecast") {
   climateMapRandomize = TRUE
 }
 
-config$params[["mpbClimateData"]][[".plots"]] <- NA ## TODO: Plots() failing with rasters in this module
-
 mpbFitParams <- list(
   mpbClimateData = config$params[["mpbClimateData"]],
   mpbMassAttacksData = config$params[["mpbMassAttacksData"]],
   ## mpbPine was run with Biomass_borealDataPrep etc. earlier
   mpbRedTopSpread = config$params[["mpbRedTopSpread"]]
 )
+
+## TODO: Plots() failing with rasters in this module
+mpbFitParams[["mpbClimateData"]][[".plots"]] <- NA
 
 mpbFitObjects <- list(
   standAgeMap = simOutPreamble[["standAgeMap"]],
