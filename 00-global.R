@@ -94,7 +94,7 @@ if (!"SpaDES.project" %in% rownames(installed.packages(lib.loc = .libPaths()[1])
 }
 require("SpaDES.project")
 
-if (!"SpaDES.project" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
+if (!"SpaDES.config" %in% rownames(installed.packages(lib.loc = .libPaths()[1]))) {
   remotes::install_github("PredictiveEcology/SpaDES.config@development", upgrade = FALSE)
 }
 require("SpaDES.config")
